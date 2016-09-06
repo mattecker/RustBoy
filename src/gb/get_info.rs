@@ -1,6 +1,5 @@
 #[allow(unused_imports)]
 use std::env;
-use std::fs;
 
 
 
@@ -20,27 +19,27 @@ pub fn ret_info (file_buf: &Vec<u8>) {
     for x in 308..323 {
     	rom_name.push(file_buf[x] as char);
     }
-    println!("ROM Name: {}", rom_name);
+    println!("ROM Name:       {}", rom_name);
 
     if file_buf[323] == 128 { // 0x0143
     	gameboy_color = "Yes".to_string();
     } else {
     	gameboy_color = "No".to_string();
     }
-    println!("GameBoy Color: {}", gameboy_color);
+    println!("GameBoy Color:  {}", gameboy_color);
 
     if file_buf[326] == 3 { // 0x0146
     	super_gameboy = "Yes".to_string();
     } else {
     	super_gameboy = "No".to_string();
     }
-    println!("Super GameBoy: {}", super_gameboy);
+    println!("Super GameBoy:  {}", super_gameboy);
 
     match file_buf[327] { // 0x0147
     	0	=> cartridge_type = "ROM ONLY".to_string(),
     	1	=> cartridge_type = "ROM+MBC".to_string(),
     	2	=> cartridge_type = "ROM+MBC1+RAM".to_string(),
-    	3	=> cartridge_type = "ROM+MBC1+RAM+BATT".to_string(),
+    	3	=> cartridge_type = "ROM+MBC1+RAM+BATTERY".to_string(),
     	5	=> cartridge_type = "ROM+MBC2".to_string(),
     	6	=> cartridge_type = "ROM+MBC2+BATTERY".to_string(),
     	8	=> cartridge_type = "ROM+RAM".to_string(),
@@ -80,7 +79,7 @@ pub fn ret_info (file_buf: &Vec<u8>) {
     	84 => rom_size = "12Mbit".to_string(),
     	_  => rom_size = "Unrecognized value, try blowing on the cartridge".to_string(),
     }
-    println!("ROM Size: {}", rom_size);
+    println!("ROM Size:       {}", rom_size);
 
     match file_buf[329] { // 0x149
     	0 => ram_size = "None".to_string(),
@@ -90,7 +89,7 @@ pub fn ret_info (file_buf: &Vec<u8>) {
     	4 => ram_size = "1MBit".to_string(),
     	_ => ram_size = "Unrecognized value, try blowing on the cartridge".to_string(),
     }
-    println!("RAM Size: {}", ram_size);
+    println!("RAM Size:       {}", ram_size);
 
     
     if file_buf[330] == 0 { // 0x014A
@@ -98,5 +97,5 @@ pub fn ret_info (file_buf: &Vec<u8>) {
     } else {
     	destination = "Non-Japanese".to_string();
     }
-    println!("Destination: {}", destination);
+    println!("Destination:    {}", destination);
 }
