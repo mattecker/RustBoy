@@ -3,19 +3,20 @@ use std::fs;
 use std::io::Read;
 use std::path::Path;
 
+#[allow(dead_code)]
 #[derive(Default)]
 struct CPU {
-    reg_a:  u8,
+    reg_a:  u8,	// accumulator
     reg_b:  u8,
     reg_c:  u8,
     reg_d:  u8,
     reg_e:  u8,
-    reg_f:  u8,
+    reg_f:  u8,	// flags
     reg_h:  u8,
     reg_l:  u8,
 
-    reg_sp: u16,
-    reg_pc: u16
+    reg_sp: u16,// stack pointer
+    reg_pc: u16	// program counter
 }
 
 impl CPU {
@@ -24,29 +25,30 @@ impl CPU {
     }
 }
 
+#[allow(unused_assignments)]
+#[allow(unused_mut)]
+#[allow(unused_variables)]
 fn main() {
     let 	file_name	= std::env::args().nth(1).unwrap();
     let     file_buf    = load_rom(file_name);
 
 
-    let mut	rom_name		= "".to_string();
-    let mut	gameboy_color	= "".to_string();
-    let mut	super_gameboy	= "".to_string();
-    let mut	cartridge_type	= "".to_string();
-    let mut	rom_size		= "".to_string();
-    let mut	ram_size		= "".to_string();
-    let mut	destination		= "".to_string();
-
+    let mut	rom_name		= String::new();
+    let mut	gameboy_color	= String::new();
+    let mut	super_gameboy	= String::new();
+    let mut	cartridge_type	= String::new();
+    let mut	rom_size		= String::new();
+    let mut	ram_size		= String::new();
+    let mut	destination		= String::new();
 
     print!("ROM Name: ");
-    for x in 308..323 { // Print name of game
-    	let temp = file_buf[x] as char;
-    	print!("{}", temp);
+    for x in 308..323 {
+    	rom_name.push(file_buf[x] as char);
     }
-    println!("");
+    println!("{}", rom_name);
 
     print!("ROM Size: ");
-
+    
     match file_buf[328] {
     	0  => rom_size = "256Kbit".to_string(),
     	1  => rom_size = "512Kbit".to_string(),
@@ -60,18 +62,21 @@ fn main() {
     	84 => rom_size = "12Mbit".to_string(),
     	_  => rom_size = "Unrecognized value, try blowing on the cartridge".to_string(),
     }
+
     println!("{}", rom_size);
 
     print!("RAM Size: ");
 
     match file_buf[329] {
-    	0 => println!("None"),
-    	1 => println!("16kBit"),
-    	2 => println!("64kBit"),
-    	3 => println!("256kBit"),
-    	4 => println!("1MBit"),
-    	_ => println!("Unrecognized value, try blowing on the cartridge"),
+    	0 => ram_size = "None".to_string(),
+    	1 => ram_size = "16kBit".to_string(),
+    	2 => ram_size = "64kBit".to_string(),
+    	3 => ram_size = "256kBit".to_string(),
+    	4 => ram_size = "1MBit".to_string(),
+    	_ => ram_size = "Unrecognized value, try blowing on the cartridge".to_string(),
     }
+
+    println!("{}", ram_size);
 
 
 	// println!("{}", file_name);
