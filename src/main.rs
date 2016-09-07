@@ -26,7 +26,19 @@ struct CPU {
 #[allow(dead_code)]
 impl CPU {
     fn new() -> CPU {
-        CPU::default()
+        CPU {
+        	reg_a:	0,
+        	reg_b:  0,
+		    reg_c:  0,
+		    reg_d:  0,
+		    reg_e:  0,
+		    reg_f:  0,
+		    reg_h:  0,
+		    reg_l:  0,
+
+        	reg_sp:	65534,	// 0xFFFE
+        	reg_pc:	256,	// 0x0100
+        }
     }
 }
 
@@ -40,7 +52,6 @@ fn main() {
     gb::get_info::ret_info(&file_buf);
 
 
-	// println!("{}", file_name);
 }
 
 fn load_rom<P: AsRef<Path>>(path: P) -> Vec<u8> {
