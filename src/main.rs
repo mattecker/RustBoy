@@ -5,7 +5,6 @@ use std::env;
 use std::fs;
 use std::io::Read;
 use std::path::Path;
-//use gb::get_info;
 
 #[allow(dead_code)]
 #[derive(Default)]
@@ -36,8 +35,8 @@ impl CPU {
 		    reg_h:  0,
 		    reg_l:  0,
 
-        	reg_sp:	65534,	// 0xFFFE
-        	reg_pc:	256,	// 0x0100
+        	reg_sp:	0xFFFE,
+        	reg_pc:	0x0100,
         }
     }
 }
@@ -51,6 +50,8 @@ fn main() {
 
     gb::get_info::ret_info(&file_buf);
 
+    let mut CPU = CPU::new();
+    println!("Program Counter: {}", CPU.reg_pc);
 
 }
 

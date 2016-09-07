@@ -16,26 +16,26 @@ pub fn ret_info (file_buf: &Vec<u8>) {
     let mut	ram_size		= String::new();
     let mut	destination		= String::new();
 
-    for x in 308..323 {
+    for x in 0x0134..0x0143 {
     	rom_name.push(file_buf[x] as char);
     }
     println!("ROM Name:       {}", rom_name);
 
-    if file_buf[323] == 128 { // 0x0143
+    if file_buf[0x0143] == 128 {
     	gameboy_color = "Yes".to_string();
     } else {
     	gameboy_color = "No".to_string();
     }
     println!("GameBoy Color:  {}", gameboy_color);
 
-    if file_buf[326] == 3 { // 0x0146
+    if file_buf[0x0146] == 3 {
     	super_gameboy = "Yes".to_string();
     } else {
     	super_gameboy = "No".to_string();
     }
     println!("Super GameBoy:  {}", super_gameboy);
 
-    match file_buf[327] { // 0x0147
+    match file_buf[0x0147] {
     	0	=> cartridge_type = "ROM ONLY".to_string(),
     	1	=> cartridge_type = "ROM+MBC".to_string(),
     	2	=> cartridge_type = "ROM+MBC1+RAM".to_string(),
@@ -66,7 +66,7 @@ pub fn ret_info (file_buf: &Vec<u8>) {
     }
     println!("Cartridge Type: {}", cartridge_type);
 
-    match file_buf[328] { // 0x0148
+    match file_buf[0x0148] {
     	0  => rom_size = "256Kbit".to_string(),
     	1  => rom_size = "512Kbit".to_string(),
     	2  => rom_size = "1Mbit".to_string(),
@@ -81,7 +81,7 @@ pub fn ret_info (file_buf: &Vec<u8>) {
     }
     println!("ROM Size:       {}", rom_size);
 
-    match file_buf[329] { // 0x149
+    match file_buf[0x0149] {
     	0 => ram_size = "None".to_string(),
     	1 => ram_size = "16kBit".to_string(),
     	2 => ram_size = "64kBit".to_string(),
@@ -92,7 +92,7 @@ pub fn ret_info (file_buf: &Vec<u8>) {
     println!("RAM Size:       {}", ram_size);
 
     
-    if file_buf[330] == 0 { // 0x014A
+    if file_buf[0x014A] == 0 {
     	destination = "Japanese".to_string();
     } else {
     	destination = "Non-Japanese".to_string();
