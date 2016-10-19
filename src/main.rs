@@ -25,7 +25,7 @@ fn main() {
     println!("reg_a = {}", cpu.reg_a);
     println!("reg_c = {}", cpu.reg_c);
     //gb::instructions::ins02(&mut cpu);
-    let ins = 0x02u8;
+    let ins = 0x0Fu8;
     gb::instructions::exec_ins(&mut cpu, &file_buf, ins);
     // &cpu.reg_a, &mut cpu.reg_b, &mut cpu.reg_c
     println!("reg_c = {}", cpu.reg_c);
