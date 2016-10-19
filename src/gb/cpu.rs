@@ -4,13 +4,13 @@ pub struct Cpu { // some variables public for debugging at the moment
     pub reg_a:  u8,	// accumulator
     pub reg_b:  u8,
     pub reg_c:  u8,
-    reg_d:  u8,
-    reg_e:  u8,
-    reg_f:  u8,	// flags
-    reg_h:  u8,
-    reg_l:  u8,
+    pub reg_d:  u8,
+    pub reg_e:  u8,
+    pub reg_f:  u8,	// flags
+    pub reg_h:  u8,
+    pub reg_l:  u8,
 
-    reg_sp: u16,// stack pointer
+    pub reg_sp: u16,// stack pointer
     pub reg_pc: u16	// program counter
 }
 
