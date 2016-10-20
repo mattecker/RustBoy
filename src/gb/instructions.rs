@@ -1,12 +1,13 @@
 use gb::cpu::Cpu;
+use gb::memory::Memory;
 #[allow(dead_code)]
 #[allow(unused_assignments)]
 #[allow(unused_mut)]
 #[allow(unused_variables)]
 
 // will hopefully look cleaner than individual functions when executing an instruction
-// comment format: [name] [parameters (optional)] [byte length] [cycles]
-pub fn exec_ins(cpu: &mut Cpu, file_buf: &Vec<u8>, ins: u8) {
+// comment format: [name] [parameters (if any)] [byte length] [cycles] [flags affected (if any)]
+pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8) {
     println!("Executing instruction 0x{:x}", ins);
 
     match ins {
@@ -44,15 +45,16 @@ pub fn exec_ins(cpu: &mut Cpu, file_buf: &Vec<u8>, ins: u8) {
             cpu.reg_pc  += 1;
         }
         0x08    =>  { //LD (a16),SP 3 20
-
+            //memory.memory_array[((file_buf[(cpu.reg_pc+2) as usize] * 128) + file_buf[(cpu.reg_pc+1) as usize]) as usize] = cpu.reg_sp;
             cpu.reg_pc  += 3;
         }
         0x09    =>  { // ADD HL,BC 1 8
-
+            cpu.reg_h   = cpu.reg_b;
+            cpu.reg_l   = cpu.reg_c;
             cpu.reg_pc  += 1;
         }
         0x0A    =>  { // LD A,(BC) 1 8
-
+            cpu.reg_a   = memory.memory_array[cpu.reg_bc() as usize];
             cpu.reg_pc  += 1;
         }
         0x0B    =>  { // DEC BC 1 8
@@ -118,7 +120,7 @@ pub fn exec_ins(cpu: &mut Cpu, file_buf: &Vec<u8>, ins: u8) {
             cpu.reg_pc  += 1;
         }
         0x1A    =>  { // LD A,(DE) 1 8
-
+            cpu.reg_a   = memory.memory_array[cpu.reg_de() as usize];
             cpu.reg_pc  += 1;
         }
         0x1B    =>  { // DEC DE 1 8
@@ -146,7 +148,8 @@ pub fn exec_ins(cpu: &mut Cpu, file_buf: &Vec<u8>, ins: u8) {
             cpu.reg_pc  += 2;
         }
         0x21    =>  { // LD HL,d16 3 12
-
+            cpu.reg_h   = file_buf[(cpu.reg_pc+2) as usize];
+            cpu.reg_l   = file_buf[(cpu.reg_pc+1) as usize];
             cpu.reg_pc  += 3;
         }
         0x22    =>  { // LD (HL+),A 1 8
@@ -205,76 +208,81 @@ pub fn exec_ins(cpu: &mut Cpu, file_buf: &Vec<u8>, ins: u8) {
 
             cpu.reg_pc  += 1;
         }
-        0x30    =>  { //
+        0x30    =>  { // JR NC,r8 2 12/8
 
         }
-        0x31    =>  { //
+        0x31    =>  { // LD SP,d16 3 12
 
         }
-        0x32    =>  { //
+        0x32    =>  { // LD (HL-),A 1 8
 
         }
-        0x33    =>  { //
+        0x33    =>  { // INC SP 1 8
+            cpu.reg_sp  += 1;
+            cpu.reg_pc  += 1;
+        }
+        0x34    =>  { // INC (HL)1 12
 
         }
-        0x34    =>  { //
+        0x35    =>  { // DEC (HL) 1 12
 
         }
-        0x35    =>  { //
+        0x36    =>  { // LD (HL),d8 2 12
 
         }
-        0x36    =>  { //
+        0x37    =>  { // SCF 1 4
 
         }
-        0x37    =>  { //
+        0x38    =>  { // JR C,r8 2 12/8
 
         }
-        0x38    =>  { //
+        0x39    =>  { // ADD HL,SP 1 8
 
         }
-        0x39    =>  { //
+        0x3A    =>  { // LD A,(HL-) 1 8
 
         }
-        0x3A    =>  { //
+        0x3B    =>  { // DEC SP 1 8
+            cpu.reg_sp  -= 1;
+            cpu.reg_pc  += 1;
+        }
+        0x3C    =>  { // INC A 1 4
+            cpu.reg_a   += 1;
+            cpu.reg_pc  += 1;
+        }
+        0x3D    =>  { // DEC A 1 4
+            cpu.reg_a   -= 1;
+            cpu.reg_pc  += 1;
+        }
+        0x3E    =>  { // LD A,d8 2 8
+            cpu.reg_a   = file_buf[(cpu.reg_pc+1) as usize];
+            cpu.reg_pc  += 2;
+        }
+        0x3F    =>  { // CCF 1 4
 
         }
-        0x3B    =>  { //
+        0x40    =>  { // LD B,B 1 4
 
         }
-        0x3C    =>  { //
+        0x41    =>  { // LD B,C 1 4
 
         }
-        0x3D    =>  { //
+        0x42    =>  { // LD B,D1 4
 
         }
-        0x3E    =>  { //
+        0x43    =>  { // LD B,E 1 4
 
         }
-        0x3F    =>  { //
+        0x44    =>  { // LD B,H 1 4
 
         }
-        0x40    =>  { //
+        0x45    =>  { // LD B,L 1 4
 
         }
-        0x41    =>  { //
+        0x46    =>  { // LD B,(HL) 1 8
 
         }
-        0x42    =>  { //
-
-        }
-        0x43    =>  { //
-
-        }
-        0x44    =>  { //
-
-        }
-        0x45    =>  { //
-
-        }
-        0x46    =>  { //
-
-        }
-        0x47    =>  { //
+        0x47    =>  { // LD B,A 1 4
 
         }
         0x48    =>  { //
@@ -546,9 +554,49 @@ pub fn exec_ins(cpu: &mut Cpu, file_buf: &Vec<u8>, ins: u8) {
             //cpu.reg_pc = de_endian(file_buf[(cpu.reg_pc+1) as usize], file_buf[(cpu.reg_pc+2) as usize]);
             cpu.reg_pc  = ((file_buf[(cpu.reg_pc+2) as usize] * 128) + file_buf[(cpu.reg_pc+1) as usize]) as u16;
         }
-        0xFE    =>  { // CP d8 2 8
+
+        0xF0    =>  { //
 
         }
+        0xF1    =>  { //
+
+        }
+        0xF2    =>  { //
+
+        }
+        0xF3    =>  { //
+
+        }
+        0xF5    =>  { //
+
+        }
+        0xF6    =>  { //
+
+        }
+        0xF7    =>  { //
+
+        }
+        0xF8    =>  { //
+
+        }
+        0xF9    =>  { //
+
+        }
+        0xFA    =>  { //
+
+        }
+        0xFB    =>  { //
+
+        }
+        0xFE    =>  { // CP d8 2 8
+
+            cpu.reg_pc  += 2;
+        }
+        0xFF    =>  { //
+
+        }
+
+
         0xD3|0xDB|0xDD|0xE3|0xE4|0xEB|0xEC|0xED|0xF4|0xFC|0xFD => { // unsupported instructions
             println!{"Instruction {} is not supported by the GameBoy's CPU", ins};
             cpu.reg_pc  += 1;
