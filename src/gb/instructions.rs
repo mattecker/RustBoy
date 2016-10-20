@@ -28,11 +28,11 @@ pub fn exec_ins(cpu: &mut Cpu, file_buf: &Vec<u8>, ins: u8) {
             cpu.reg_pc  += 1;
         }
         0x04    =>  { // INC B 1 4
-
+            cpu.reg_b   += 1;
             cpu.reg_pc  += 1;
         }
         0x05    =>  { // DEC B 1 4
-
+            cpu.reg_b   -= 1;
             cpu.reg_pc  += 1;
         }
         0x06    =>  { // LD B,d8 2 8
@@ -60,11 +60,11 @@ pub fn exec_ins(cpu: &mut Cpu, file_buf: &Vec<u8>, ins: u8) {
             cpu.reg_pc  += 1;
         }
         0x0C    =>  { // INC C 1 4
-
+            cpu.reg_c   += 1;
             cpu.reg_pc  += 1;
         }
         0x0D    =>  { // DEC C 1 4
-
+            cpu.reg_c   -= 1;
             cpu.reg_pc  += 1;
         }
         0x0E    =>  { // LD C,d8 2 8
@@ -85,7 +85,8 @@ pub fn exec_ins(cpu: &mut Cpu, file_buf: &Vec<u8>, ins: u8) {
             cpu.reg_pc  += 3;
         }
         0x12    =>  { // LD (DE),A 1 8
-
+            cpu.reg_e   = cpu.reg_a;
+            cpu.reg_d   = 0b00000000u8;
             cpu.reg_pc  += 1;
         }
         0x13    =>  { // INC DE 1 8
@@ -93,15 +94,15 @@ pub fn exec_ins(cpu: &mut Cpu, file_buf: &Vec<u8>, ins: u8) {
             cpu.reg_pc  += 1;
         }
         0x14    =>  { // INC D 1 4
-
+            cpu.reg_d   += 1;
             cpu.reg_pc  += 1;
         }
         0x15    =>  { // DEC D 1 4
-
+            cpu.reg_d   -= 1;
             cpu.reg_pc  += 1;
         }
         0x16    =>  { // LD D,d8 2 8
-
+            cpu.reg_d   = file_buf[(cpu.reg_pc+1) as usize];
             cpu.reg_pc  += 2;
         }
         0x17    =>  { // RLA 1 4
@@ -125,68 +126,84 @@ pub fn exec_ins(cpu: &mut Cpu, file_buf: &Vec<u8>, ins: u8) {
             cpu.reg_pc  += 1;
         }
         0x1C    =>  { // INC E 1 4
-
+            cpu.reg_e   += 1;
             cpu.reg_pc  += 1;
         }
         0x1D    =>  { // DEC E 1 4
-
+            cpu.reg_e   -= 1;
             cpu.reg_pc  += 1;
         }
         0x1E    =>  { // LD E,d8 2 8
-
+            cpu.reg_e   = file_buf[(cpu.reg_pc+1) as usize];
             cpu.reg_pc  += 2;
         }
         0x1F    =>  { // RRA 1 4
 
             cpu.reg_pc  += 1;
         }
-        0x20    =>  { //
+        0x20    =>  { // JR NZ,r8 2 12/8
 
+            cpu.reg_pc  += 2;
         }
-        0x21    =>  { //
+        0x21    =>  { // LD HL,d16 3 12
 
+            cpu.reg_pc  += 3;
         }
-        0x22    =>  { //
+        0x22    =>  { // LD (HL+),A 1 8
 
+            cpu.reg_pc  += 1;
         }
-        0x23    =>  { //
+        0x23    =>  { // INC HL 1 8
 
+            cpu.reg_pc  += 1;
         }
-        0x24    =>  { //
-
+        0x24    =>  { // INC H 1 4
+            cpu.reg_h   += 1;
+            cpu.reg_pc  += 1;
         }
-        0x25    =>  { //
-
+        0x25    =>  { // DEC H 1 4
+            cpu.reg_h   -= 1;
+            cpu.reg_pc  += 1;
         }
-        0x26    =>  { //
-
+        0x26    =>  { // LD H,d8 2 8
+            cpu.reg_h   = file_buf[(cpu.reg_pc+1) as usize];
+            cpu.reg_pc  += 2;
         }
-        0x27    =>  { //
+        0x27    =>  { // DAA 1 4
 
+            cpu.reg_pc  += 1;
         }
-        0x28    =>  { //
+        0x28    =>  { // JR Z,r8 2 12/8
 
+            cpu.reg_pc  += 2;
         }
-        0x29    =>  { //
+        0x29    =>  { // ADD HL,HL 1 8
 
+            cpu.reg_pc  += 1;
         }
-        0x2A    =>  { //
+        0x2A    =>  { // LD A,(HL+) 1 8
 
+            cpu.reg_pc  += 1;
         }
-        0x2B    =>  { //
+        0x2B    =>  { // DEC HL 1 8
 
+            cpu.reg_pc  += 1;
         }
-        0x2C    =>  { //
-
+        0x2C    =>  { // INC L 1 4
+            cpu.reg_l   += 1;
+            cpu.reg_pc  += 1;
         }
-        0x2D    =>  { //
-
+        0x2D    =>  { // DEC L 1 4
+            cpu.reg_l   -= 1;
+            cpu.reg_pc  += 1;
         }
-        0x2E    =>  { //
-
+        0x2E    =>  { // LD L,d8 2 8
+            cpu.reg_l   = file_buf[(cpu.reg_pc+1) as usize];
+            cpu.reg_pc  += 2;
         }
-        0x2F    =>  { //
+        0x2F    =>  { // CPL 1 4
 
+            cpu.reg_pc  += 1;
         }
         0x30    =>  { //
 
