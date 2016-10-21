@@ -57,10 +57,10 @@ impl Cpu {
             self.reg_f += 0b10000000u8;
         }
     }
-    pub fn set_n() {
+    pub fn set_n(&mut self) {
 
     }
-    pub fn set_h() {
+    pub fn set_h(&mut self) {
 
     }
     pub fn set_c(&mut self) {
@@ -74,16 +74,45 @@ impl Cpu {
             self.reg_f -= 0b10000000u8;
         }
     }
-    pub fn reset_n() {
+    pub fn reset_n(&mut self) {
 
     }
-    pub fn reset_h() {
+    pub fn reset_h(&mut self) {
 
     }
     pub fn reset_c(&mut self) {
         if self.reg_f.trailing_zeros() == 4 {
             self.reg_f -= 0b00010000u8;
         }
+    }
+
+    pub fn get_z(&self) -> bool {
+        let mut flag_z: bool;
+
+        if self.reg_f.leading_zeros() == 0 {
+            flag_z = true;
+        } else {
+            flag_z = false;
+        }
+
+        flag_z
+    }
+    pub fn get_n(&self) -> bool { // todo
+        false
+    }
+    pub fn get_h(&self) -> bool { // todo
+        false
+    }
+    pub fn get_c(&self) -> bool {
+        let mut flag_c: bool;
+
+        if self.reg_f.trailing_zeros() == 4 {
+            flag_c = true;
+        } else {
+            flag_c = false;
+        }
+
+        flag_c
     }
 
 }

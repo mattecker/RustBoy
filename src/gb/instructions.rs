@@ -28,29 +28,34 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
 
             cpu.reg_pc  += 1;
         }
-        0x04    =>  { // INC B 1 4
+        0x04    =>  { // INC B 1 4 Z0H-
             cpu.reg_b   += 1;
+            cpu.reset_n();
             cpu.reg_pc  += 1;
         }
-        0x05    =>  { // DEC B 1 4
+        0x05    =>  { // DEC B 1 4 Z1H-
             cpu.reg_b   -= 1;
+            cpu.set_n();
             cpu.reg_pc  += 1;
         }
         0x06    =>  { // LD B,d8 2 8
             cpu.reg_b   = file_buf[(cpu.reg_pc+1) as usize];
             cpu.reg_pc  += 2;
         }
-        0x07    =>  { // RLCA 1 4
-
+        0x07    =>  { // RLCA 1 4 000C
+            cpu.reset_z();
+            cpu.reset_n();
+            cpu.reset_h();
             cpu.reg_pc  += 1;
         }
         0x08    =>  { //LD (a16),SP 3 20
             //memory.memory_array[((file_buf[(cpu.reg_pc+2) as usize] * 128) + file_buf[(cpu.reg_pc+1) as usize]) as usize] = cpu.reg_sp;
             cpu.reg_pc  += 3;
         }
-        0x09    =>  { // ADD HL,BC 1 8
+        0x09    =>  { // ADD HL,BC 1 8 -0HC
             cpu.reg_h   = cpu.reg_b;
             cpu.reg_l   = cpu.reg_c;
+            cpu.reset_n();
             cpu.reg_pc  += 1;
         }
         0x0A    =>  { // LD A,(BC) 1 8
@@ -61,20 +66,24 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
 
             cpu.reg_pc  += 1;
         }
-        0x0C    =>  { // INC C 1 4
+        0x0C    =>  { // INC C 1 4 Z0H-
             cpu.reg_c   += 1;
+            cpu.reset_n();
             cpu.reg_pc  += 1;
         }
-        0x0D    =>  { // DEC C 1 4
+        0x0D    =>  { // DEC C 1 4 Z1H-
             cpu.reg_c   -= 1;
+            cpu.set_n();
             cpu.reg_pc  += 1;
         }
         0x0E    =>  { // LD C,d8 2 8
             cpu.reg_c   = file_buf[(cpu.reg_pc+1) as usize];
             cpu.reg_pc  += 2;
         }
-        0x0F    =>  { // RRCA 1 4
-
+        0x0F    =>  { // RRCA 1 4 000C
+            cpu.reset_z();
+            cpu.reset_n();
+            cpu.reset_h();
             cpu.reg_pc  += 1;
         }
         0x10    =>  { // STOP 0 2 4
@@ -112,8 +121,7 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 1;
         }
         0x18    =>  { // JR r8 2 12
-
-            cpu.reg_pc  += 2;
+            cpu.reg_pc  += file_buf[(cpu.reg_pc+1) as usize] as u16;
         }
         0x19    =>  { // ADD HL,DE 1 8
 
@@ -177,8 +185,11 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 1;
         }
         0x28    =>  { // JR Z,r8 2 12/8
-
-            cpu.reg_pc  += 2;
+            if cpu.get_z() {
+                cpu.reg_pc  += file_buf[(cpu.reg_pc+1) as usize] as u16;
+            } else {
+                cpu.reg_pc  += 2;
+            }
         }
         0x29    =>  { // ADD HL,HL 1 8
 
@@ -212,7 +223,8 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
 
         }
         0x31    =>  { // LD SP,d16 3 12
-
+            cpu.reg_sp  = ((file_buf[(cpu.reg_pc+2) as usize] * 128) + file_buf[(cpu.reg_pc+1) as usize]) as u16;
+            cpu.reg_pc  += 3;
         }
         0x32    =>  { // LD (HL-),A 1 8
 
@@ -265,120 +277,151 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
 
         }
         0x41    =>  { // LD B,C 1 4
-
+            cpu.reg_b   = cpu.reg_c;
+            cpu.reg_pc  += 1;
         }
-        0x42    =>  { // LD B,D1 4
-
+        0x42    =>  { // LD B,D 1 4
+            cpu.reg_b   = cpu.reg_d;
+            cpu.reg_pc  += 1;
         }
         0x43    =>  { // LD B,E 1 4
-
+            cpu.reg_b   = cpu.reg_e;
+            cpu.reg_pc  += 1;
         }
         0x44    =>  { // LD B,H 1 4
-
+            cpu.reg_b   = cpu.reg_h;
+            cpu.reg_pc  += 1;
         }
         0x45    =>  { // LD B,L 1 4
-
+            cpu.reg_b   = cpu.reg_l;
+            cpu.reg_pc  += 1;
         }
         0x46    =>  { // LD B,(HL) 1 8
 
         }
         0x47    =>  { // LD B,A 1 4
+            cpu.reg_b   = cpu.reg_a;
+            cpu.reg_pc  += 1;
+        }
+        0x48    =>  { // LD C,B 1 4
+            cpu.reg_c   = cpu.reg_b;
+            cpu.reg_pc  += 1;
+        }
+        0x49    =>  { // LD C,C 1 4
+            //cpu.reg_c   = cpu.reg_c;
+            cpu.reg_pc  += 1;
+        }
+        0x4A    =>  { // LD C,D 1 4
+            cpu.reg_c   = cpu.reg_d;
+            cpu.reg_pc  += 1;
+        }
+        0x4B    =>  { // LD C,E 1 4
+            cpu.reg_c   = cpu.reg_e;
+            cpu.reg_pc  += 1;
+        }
+        0x4C    =>  { // LD C,H 1 4
+            cpu.reg_c   = cpu.reg_h;
+            cpu.reg_pc  += 1;
+        }
+        0x4D    =>  { // LD C,L 1 4
+            cpu.reg_c   = cpu.reg_l;
+            cpu.reg_pc  += 1;
+        }
+        0x4E    =>  { // LD C,(HL) 1 8
+            //cpu.reg_c   = ;
+            cpu.reg_pc  += 1;
+        }
+        0x4F    =>  { // LD C,A 1 4
+            cpu.reg_c   = cpu.reg_a;
+            cpu.reg_pc  += 1;
+        }
+        0x50    =>  { // LD D,B 1 4
+            cpu.reg_d   = cpu.reg_b;
+            cpu.reg_pc  += 1;
+        }
+        0x51    =>  { // LD D,C 1 4
+            cpu.reg_d   = cpu.reg_c;
+            cpu.reg_pc  += 1;
+        }
+        0x52    =>  { // LD D,D 1 4
+            //cpu.reg_d   = cpu.reg_d;
+            cpu.reg_pc  += 1;
+        }
+        0x53    =>  { // LD D,E 1 4
+            cpu.reg_d   = cpu.reg_e;
+            cpu.reg_pc  += 1;
+        }
+        0x54    =>  { // LD D,H 1 4
+            cpu.reg_d   = cpu.reg_h;
+            cpu.reg_pc  += 1;
+        }
+        0x55    =>  { // LD D,L 1 4
+            cpu.reg_d   = cpu.reg_l;
+            cpu.reg_pc  += 1;
+        }
+        0x56    =>  { // LD D,(HL) 1 8
+            //cpu.reg_d   = ;
+            cpu.reg_pc  += 1;
+        }
+        0x57    =>  { // LD D,A 1 4
+            cpu.reg_d   = cpu.reg_a;
+            cpu.reg_pc  += 1;
+        }
+        0x58    =>  { // LD E,B 1 4
+            cpu.reg_e   = cpu.reg_b;
+            cpu.reg_pc  += 1;
+        }
+        0x59    =>  { // LD E,C 1 4
+            cpu.reg_e   = cpu.reg_c;
+            cpu.reg_pc  += 1;
+        }
+        0x5A    =>  { // LD E,D 1 4
+            cpu.reg_e   = cpu.reg_d;
+            cpu.reg_pc  += 1;
+        }
+        0x5B    =>  { // LD E,E 1 4
+            //cpu.reg_e   = cpu.reg_e;
+            cpu.reg_pc  += 1;
+        }
+        0x5C    =>  { // LD E,H 1 4
+            cpu.reg_e   = cpu.reg_h;
+            cpu.reg_pc  += 1;
+        }
+        0x5D    =>  { // LD E,L 1 4
+            cpu.reg_e   = cpu.reg_l;
+            cpu.reg_pc  += 1;
+        }
+        0x5E    =>  { // LD E,(HL) 1 8
+            //cpu.reg_e   = ;
+            cpu.reg_pc  += 1;
+        }
+        0x5F    =>  { // LD E,A 1 4
+            cpu.reg_e   = cpu.reg_a;
+            cpu.reg_pc  += 1;
+        }
+        0x60    =>  { // LD H,B 1 4
+            cpu.reg_h   = cpu.reg_b;
+            cpu.reg_pc  += 1;
+        }
+        0x61    =>  { // LD H,C 1 4
 
         }
-        0x48    =>  { //
+        0x62    =>  { // LD H,D 1 4
 
         }
-        0x49    =>  { //
+        0x63    =>  { // LD H,E 1 4
 
         }
-        0x4A    =>  { //
+        0x64    =>  { // LD H,H 1 4
 
         }
-        0x4B    =>  { //
+        0x65    =>  { // LD H,L 1 4
 
         }
-        0x4C    =>  { //
+        0x66    =>  { // LD H,(HL) 1 8
 
         }
-        0x4D    =>  { //
-
-        }
-        0x4E    =>  { //
-
-        }
-        0x4F    =>  { //
-
-        }
-        0x50    =>  { //
-
-        }
-        0x51    =>  { //
-
-        }
-        0x52    =>  { //
-
-        }
-        0x53    =>  { //
-
-        }
-        0x54    =>  { //
-
-        }
-        0x55    =>  { //
-
-        }
-        0x56    =>  { //
-
-        }
-        0x57    =>  { //
-
-        }
-        0x58    =>  { //
-
-        }
-        0x59    =>  { //
-
-        }
-        0x5A    =>  { //
-
-        }
-        0x5B    =>  { //
-
-        }
-        0x5C    =>  { //
-
-        }
-        0x5D    =>  { //
-
-        }
-        0x5E    =>  { //
-
-        }
-        0x5F    =>  { //
-
-        }
-        0x60    =>  { //
-
-        }
-        0x61    =>  { //
-
-        }
-        0x62    =>  { //
-
-        }
-        0x63    =>  { //
-
-        }
-        0x64    =>  { //
-
-        }
-        0x65    =>  { //
-
-        }
-        0x66    =>  { //
-
-        }
-        0x67    =>  { //
+        0x67    =>  { // LD H,A 1 4
 
         }
         0x68    =>  { //
