@@ -11,7 +11,9 @@ pub struct Cpu { // some variables public for debugging at the moment
     pub reg_l:  u8,
 
     pub reg_sp: u16,// stack pointer
-    pub reg_pc: u16	// program counter
+    pub reg_pc: u16,// program counter
+
+    pub cont:   bool
 }
 
 #[allow(dead_code)]
@@ -29,29 +31,54 @@ impl Cpu {
 
         	reg_sp:	0xFFFE,
         	reg_pc:	0x0100,
+
+            cont:   true,
         }
     }
 
-    pub fn reg_af(&self) -> u16 {
+    // combination register getters
+    pub fn get_reg_af(&self) -> u16 {
         let reg_af = ((&self.reg_a * 128) + &self.reg_f) as u16;
         reg_af
     }
 
-    pub fn reg_bc(&self) -> u16 {
+    pub fn get_reg_bc(&self) -> u16 {
         let reg_bc = ((&self.reg_b * 128) + &self.reg_c) as u16;
         reg_bc
     }
 
-    pub fn reg_de(&self) -> u16 {
+    pub fn get_reg_de(&self) -> u16 {
         let reg_de = ((&self.reg_d * 128) + &self.reg_e) as u16;
         reg_de
     }
 
-    pub fn reg_hl(&self) -> u16 {
+    pub fn get_reg_hl(&self) -> u16 {
         let reg_hl = ((&self.reg_h * 128) + &self.reg_l) as u16;
         reg_hl
     }
 
+    // combination register setters
+    pub fn set_reg_af(&mut self, data: u16) {
+        self.reg_a  = (data >> 8) as u8;
+        self.reg_f  = data as u8;
+    }
+
+    pub fn set_reg_bc(&mut self, data: u16) {
+        self.reg_b  = (data >> 8) as u8;
+        self.reg_c  = data as u8;
+    }
+
+    pub fn set_reg_de(&mut self, data: u16) {
+        self.reg_d  = (data >> 8) as u8;
+        self.reg_e  = data as u8;
+    }
+
+    pub fn set_reg_hl(&mut self, data: u16) {
+        self.reg_h  = (data >> 8) as u8;
+        self.reg_l  = data as u8;
+    }
+
+    // flag setters
     pub fn set_z(&mut self) {
         if self.reg_f.leading_zeros() == 1 {
             self.reg_f += 0b10000000u8;
@@ -69,6 +96,7 @@ impl Cpu {
         }
     }
 
+    // flag resetters
     pub fn reset_z(&mut self) {
         if self.reg_f.leading_zeros() == 0 {
             self.reg_f -= 0b10000000u8;
@@ -86,6 +114,7 @@ impl Cpu {
         }
     }
 
+    // flag getters
     pub fn get_z(&self) -> bool {
         let mut flag_z: bool;
 

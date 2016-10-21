@@ -7,7 +7,7 @@ pub struct Memory {
 impl Memory {
     pub fn new() -> Memory {
         Memory {
-            memory_array:   Vec::new(),
+            memory_array:   vec![0x00; 0x10000],
 
         }
     }
