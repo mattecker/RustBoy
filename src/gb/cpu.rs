@@ -131,17 +131,19 @@ impl Cpu {
     pub fn get_c(&self) -> bool {
         get_bit_at_8(self.reg_f, 4)
     }
+
+
 }
 
-pub fn get_bit_at_16(input: u16, n: u8) -> bool {
+// modified from https://www.reddit.com/r/rust/comments/3xgeo0/biginner_question_how_can_i_get_the_value_of_a/cy4ei5n/
+fn get_bit_at_16(input: u16, n: u8) -> bool {
     if n < 16 {
         input & (1 << n) != 0
     } else {
         false
     }
 }
-
-pub fn get_bit_at_8(input: u8, n: u8) -> bool {
+fn get_bit_at_8(input: u8, n: u8) -> bool {
     if n < 8 {
         input & (1 << n) != 0
     } else {

@@ -8,7 +8,7 @@ use gb::memory::Memory;
 // will hopefully look cleaner than individual functions when executing an instruction
 // comment format: [name] [parameters (if any)] [byte length] [cycles] [flags affected (if any)]
 pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8) {
-    println!("Executing instruction 0x{:x}", ins);
+    println!("Executing instruction 0x{:02X}", ins);
 
     match ins {
         0x00    =>  { // NOP 1 4
@@ -31,11 +31,21 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         }
         0x04    =>  { // INC B 1 4 Z0H-
             cpu.reg_b   += 1;
+            if cpu.reg_b == 0 {
+                cpu.set_z();
+            } else {
+                cpu.reset_z();
+            }
             cpu.reset_n();
             cpu.reg_pc  += 1;
         }
         0x05    =>  { // DEC B 1 4 Z1H-
             cpu.reg_b   -= 1;
+            if cpu.reg_b == 0 {
+                cpu.set_z();
+            } else {
+                cpu.reset_z();
+            }
             cpu.set_n();
             cpu.reg_pc  += 1;
         }
@@ -50,7 +60,8 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 1;
         }
         0x08    =>  { //LD (a16),SP 3 20
-            //memory.memory_array[((file_buf[(cpu.reg_pc+2) as usize] * 16) + file_buf[(cpu.reg_pc+1) as usize]) as usize] = cpu.reg_sp;
+            memory.memory_array[((file_buf[(cpu.reg_pc+2) as usize] * 16) + file_buf[(cpu.reg_pc+1) as usize]) as usize] = cpu.reg_sp as u8;
+            memory.memory_array[(((file_buf[(cpu.reg_pc+2) as usize] * 16) + file_buf[(cpu.reg_pc+1) as usize])+1) as usize] = (cpu.reg_sp >> 8) as u8;
             cpu.reg_pc  += 3;
         }
         0x09    =>  { // ADD HL,BC 1 8 -0HC
@@ -70,11 +81,21 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         }
         0x0C    =>  { // INC C 1 4 Z0H-
             cpu.reg_c   += 1;
+            if cpu.reg_c == 0 {
+                cpu.set_z();
+            } else {
+                cpu.reset_z();
+            }
             cpu.reset_n();
             cpu.reg_pc  += 1;
         }
         0x0D    =>  { // DEC C 1 4 Z1H-
             cpu.reg_c   -= 1;
+            if cpu.reg_c == 0 {
+                cpu.set_z();
+            } else {
+                cpu.reset_z();
+            }
             cpu.set_n();
             cpu.reg_pc  += 1;
         }
@@ -106,20 +127,34 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
 
             cpu.reg_pc  += 1;
         }
-        0x14    =>  { // INC D 1 4
+        0x14    =>  { // INC D 1 4 Z0H-
             cpu.reg_d   += 1;
+            if cpu.reg_d == 0 {
+                cpu.set_z();
+            } else {
+                cpu.reset_z();
+            }
+            cpu.reset_n();
             cpu.reg_pc  += 1;
         }
-        0x15    =>  { // DEC D 1 4
+        0x15    =>  { // DEC D 1 4 Z1H-
             cpu.reg_d   -= 1;
+            if cpu.reg_d == 0 {
+                cpu.set_z();
+            } else {
+                cpu.reset_z();
+            }
+            cpu.set_n();
             cpu.reg_pc  += 1;
         }
         0x16    =>  { // LD D,d8 2 8
             cpu.reg_d   = file_buf[(cpu.reg_pc+1) as usize];
             cpu.reg_pc  += 2;
         }
-        0x17    =>  { // RLA 1 4
-
+        0x17    =>  { // RLA 1 4 000C
+            cpu.reset_z();
+            cpu.reset_n();
+            cpu.reset_h();
             cpu.reg_pc  += 1;
         }
         0x18    =>  { // JR r8 2 12

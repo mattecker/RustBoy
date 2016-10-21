@@ -6,7 +6,7 @@ use gb::memory::Memory;
 #[allow(unused_variables)]
 
 pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8) {
-    println!("Executing instruction 0xCB{:x}", ins);
+    println!("Executing instruction 0xCB{:02X}", ins);
 
     match ins {
         /*
@@ -417,7 +417,7 @@ pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: 
         }
         */
         0x87    =>  { // RES 0,A 2 8
-
+            reset_bit(&mut cpu.reg_a, 0);
             cpu.reg_pc  += 2;
         }
         /*
@@ -545,5 +545,31 @@ pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: 
             println!("Unrecognized/unimplemented instruction: 0xCB{:x}", ins);
             cpu.cont    = false;
         }
+    }
+}
+
+fn set_bit(reg: &mut u8, n: u8) {
+    if !get_bit_at_8(*reg, n) {
+        *reg += 2^n;
+    }
+}
+fn reset_bit(reg: &mut u8, n: u8) {
+    if get_bit_at_8(*reg, n) {
+        *reg -= 2^n;
+    }
+}
+
+fn get_bit_at_16(input: u16, n: u8) -> bool {
+    if n < 16 {
+        input & (1 << n) != 0
+    } else {
+        false
+    }
+}
+fn get_bit_at_8(input: u8, n: u8) -> bool {
+    if n < 8 {
+        input & (1 << n) != 0
+    } else {
+        false
     }
 }

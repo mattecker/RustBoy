@@ -30,13 +30,6 @@ fn main() {
 
         ins = file_buf[cpu.reg_pc as usize];
     }
-
-    println!("Register PC: 0b{:b}", cpu.reg_pc);
-    println!("Bit 0: {}", get_bit_at(cpu.reg_pc, 0));
-    println!("Bit 1: {}", get_bit_at(cpu.reg_pc, 1));
-    println!("Bit 2: {}", get_bit_at(cpu.reg_pc, 2));
-    println!("Bit 3: {}", get_bit_at(cpu.reg_pc, 3));
-
 }
 
 fn load_rom<P: AsRef<Path>>(path: P) -> Vec<u8> {
@@ -44,12 +37,4 @@ fn load_rom<P: AsRef<Path>>(path: P) -> Vec<u8> {
     let mut file_buf    = Vec::new();
     file.read_to_end(&mut file_buf).unwrap();
     file_buf
-}
-
-fn get_bit_at(input: u16, n: u8) -> bool {
-    if n < 16 {
-        input & (1 << n) != 0
-    } else {
-        false
-    }
 }
