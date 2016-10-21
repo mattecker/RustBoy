@@ -1,4 +1,5 @@
 pub mod cpu;
 pub mod get_info;
-pub mod instructions; // will not be public once cpu struct moved out of main.rs
+pub mod instructions_cb;
+pub mod instructions;
 pub mod memory;

@@ -38,23 +38,19 @@ impl Cpu {
 
     // combination register getters
     pub fn get_reg_af(&self) -> u16 {
-        let reg_af = ((&self.reg_a * 128) + &self.reg_f) as u16;
-        reg_af
+        ((&self.reg_a * 16) + &self.reg_f) as u16
     }
 
     pub fn get_reg_bc(&self) -> u16 {
-        let reg_bc = ((&self.reg_b * 128) + &self.reg_c) as u16;
-        reg_bc
+        ((&self.reg_b * 16) + &self.reg_c) as u16
     }
 
     pub fn get_reg_de(&self) -> u16 {
-        let reg_de = ((&self.reg_d * 128) + &self.reg_e) as u16;
-        reg_de
+        ((&self.reg_d * 16) + &self.reg_e) as u16
     }
 
     pub fn get_reg_hl(&self) -> u16 {
-        let reg_hl = ((&self.reg_h * 128) + &self.reg_l) as u16;
-        reg_hl
+        ((&self.reg_h * 16) + &self.reg_l) as u16
     }
 
     // combination register setters
@@ -80,68 +76,75 @@ impl Cpu {
 
     // flag setters
     pub fn set_z(&mut self) {
-        if self.reg_f.leading_zeros() == 1 {
+        if !get_bit_at_8(self.reg_f, 7) {
             self.reg_f += 0b10000000u8;
         }
     }
     pub fn set_n(&mut self) {
-
+        if !get_bit_at_8(self.reg_f, 6) {
+            self.reg_f += 0b01000000u8;
+        }
     }
     pub fn set_h(&mut self) {
-
+        if !get_bit_at_8(self.reg_f, 5) {
+            self.reg_f += 0b00100000u8;
+        }
     }
     pub fn set_c(&mut self) {
-        if self.reg_f.trailing_zeros() == 5 {
+        if !get_bit_at_8(self.reg_f, 4) {
             self.reg_f += 0b00010000u8;
         }
     }
 
     // flag resetters
     pub fn reset_z(&mut self) {
-        if self.reg_f.leading_zeros() == 0 {
+        if get_bit_at_8(self.reg_f, 7) {
             self.reg_f -= 0b10000000u8;
         }
     }
     pub fn reset_n(&mut self) {
-
+        if get_bit_at_8(self.reg_f, 6) {
+            self.reg_f -= 0b01000000u8;
+        }
     }
     pub fn reset_h(&mut self) {
-
+        if get_bit_at_8(self.reg_f, 5) {
+            self.reg_f -= 0b00100000u8;
+        }
     }
     pub fn reset_c(&mut self) {
-        if self.reg_f.trailing_zeros() == 4 {
+        if get_bit_at_8(self.reg_f, 4) {
             self.reg_f -= 0b00010000u8;
         }
     }
 
     // flag getters
     pub fn get_z(&self) -> bool {
-        let mut flag_z: bool;
-
-        if self.reg_f.leading_zeros() == 0 {
-            flag_z = true;
-        } else {
-            flag_z = false;
-        }
-
-        flag_z
+        get_bit_at_8(self.reg_f, 7)
     }
-    pub fn get_n(&self) -> bool { // todo
-        false
+    pub fn get_n(&self) -> bool {
+        get_bit_at_8(self.reg_f, 6)
     }
-    pub fn get_h(&self) -> bool { // todo
-        false
+    pub fn get_h(&self) -> bool {
+        get_bit_at_8(self.reg_f, 5)
     }
     pub fn get_c(&self) -> bool {
-        let mut flag_c: bool;
-
-        if self.reg_f.trailing_zeros() == 4 {
-            flag_c = true;
-        } else {
-            flag_c = false;
-        }
-
-        flag_c
+        get_bit_at_8(self.reg_f, 4)
     }
+}
 
+pub fn get_bit_at_16(input: u16, n: u8) -> bool {
+    if n < 16 {
+        input & (1 << n) != 0
+    } else {
+        false
+    }
+}
+
+pub fn get_bit_at_8(input: u8, n: u8) -> bool {
+    if n < 8 {
+        input & (1 << n) != 0
+    } else {
+        false
+    }
 }

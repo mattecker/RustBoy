@@ -7,10 +7,8 @@ use gb::memory::Memory;
 
 // will hopefully look cleaner than individual functions when executing an instruction
 // comment format: [name] [parameters (if any)] [byte length] [cycles] [flags affected (if any)]
-pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>) {
-    let ins = file_buf[cpu.reg_pc as usize];
+pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8) {
     println!("Executing instruction 0x{:x}", ins);
-    //cpu.cont    = false;
 
     match ins {
         0x00    =>  { // NOP 1 4
@@ -444,79 +442,103 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>) {
         0x67    =>  { // LD H,A 1 4
             cpu.reg_h   = cpu.reg_a;
             cpu.reg_pc  += 1;
+        }
+        0x68    =>  { // LD L,B 1 4
+            cpu.reg_l   = cpu.reg_b;
+            cpu.reg_pc  += 1;
+        }
+        0x69    =>  { // LD L,C 1 4
+            cpu.reg_l   = cpu.reg_c;
+            cpu.reg_pc  += 1;
+        }
+        0x6A    =>  { // LD L,D 1 4
+            cpu.reg_l   = cpu.reg_d;
+            cpu.reg_pc  += 1;
+        }
+        0x6B    =>  { // LD L,E 1 4
+            cpu.reg_l   = cpu.reg_e;
+            cpu.reg_pc  += 1;
+        }
+        0x6C    =>  { // LD L,H 1 4
+            cpu.reg_l   = cpu.reg_h;
+            cpu.reg_pc  += 1;
+        }
+        0x6D    =>  { // LD L,L 1 4
+            //cpu.reg_l   = cpu.reg_l;
+            cpu.reg_pc  += 1;
+        }
+        0x6E    =>  { // LD L,(HL) 1 8
+            cpu.reg_l   = memory.memory_array[cpu.get_reg_hl() as usize];
+            cpu.reg_pc  += 1;
+        }
+        0x6F    =>  { // LD L,A 1 4
+            cpu.reg_l   = cpu.reg_a;
+            cpu.reg_pc  += 1;
+        }
+        0x70    =>  { // LD (HL),B 1 8
+            memory.memory_array[cpu.get_reg_hl() as usize]  = cpu.reg_b;
+            cpu.reg_pc  += 1;
+        }
+        0x71    =>  { // LD (HL),C 1 8
+            memory.memory_array[cpu.get_reg_hl() as usize]  = cpu.reg_c;
+            cpu.reg_pc  += 1;
+        }
+        0x72    =>  { // LD (HL),D 1 8
+            memory.memory_array[cpu.get_reg_hl() as usize]  = cpu.reg_d;
+            cpu.reg_pc  += 1;
+        }
+        0x73    =>  { // LD (HL),E 1 8
+            memory.memory_array[cpu.get_reg_hl() as usize]  = cpu.reg_e;
+            cpu.reg_pc  += 1;
+        }
+        0x74    =>  { // LD (HL),H 1 8
+            memory.memory_array[cpu.get_reg_hl() as usize]  = cpu.reg_h;
+            cpu.reg_pc  += 1;
+        }
+        0x75    =>  { // LD (HL),L 1 8
+            memory.memory_array[cpu.get_reg_hl() as usize]  = cpu.reg_l;
+            cpu.reg_pc  += 1;
+        }
+        0x76    =>  { // HALT 1 4
+
+            cpu.reg_pc  += 1;
+        }
+        0x77    =>  { // LD (HL),A 1 8
+            memory.memory_array[cpu.get_reg_hl() as usize]  = cpu.reg_a;
+            cpu.reg_pc  += 1;
+        }
+        0x78    =>  { // LD A,B 1 4
+            cpu.reg_a   = cpu.reg_b;
+            cpu.reg_pc  += 1;
+        }
+        0x79    =>  { // LD A,C 1 4
+            cpu.reg_a   = cpu.reg_c;
+            cpu.reg_pc  += 1;
+        }
+        0x7A    =>  { // LD A,D 1 4
+            cpu.reg_a   = cpu.reg_d;
+            cpu.reg_pc  += 1;
+        }
+        0x7B    =>  { // LD A,E 1 4
+            cpu.reg_a   = cpu.reg_e;
+            cpu.reg_pc  += 1;
+        }
+        0x7C    =>  { // LD A,H 1 4
+            cpu.reg_a   = cpu.reg_h;
+            cpu.reg_pc  += 1;
+        }
+        0x7D    =>  { // LD A,L 1 4
+            cpu.reg_a   = cpu.reg_l;
+            cpu.reg_pc  += 1;
+        }
+        0x7E    =>  { // LD A,(HL) 1 8
+            cpu.reg_a   = memory.memory_array[cpu.get_reg_hl() as usize];
+            cpu.reg_pc  += 1;
+        }
+        0x7F    =>  { // LD A,A 1 4
+            //cpu.reg_a   = cpu.reg_a;
+            cpu.reg_pc  += 1;
         }/*
-        0x68    =>  { //
-
-        }
-        0x69    =>  { //
-
-        }
-        0x6A    =>  { //
-
-        }
-        0x6B    =>  { //
-
-        }
-        0x6C    =>  { //
-
-        }
-        0x6D    =>  { //
-
-        }
-        0x6E    =>  { //
-
-        }
-        0x6F    =>  { //
-
-        }
-        0x70    =>  { //
-
-        }
-        0x71    =>  { //
-
-        }
-        0x72    =>  { //
-
-        }
-        0x73    =>  { //
-
-        }
-        0x74    =>  { //
-
-        }
-        0x75    =>  { //
-
-        }
-        0x76    =>  { //
-
-        }
-        0x77    =>  { //
-
-        }
-        0x78    =>  { //
-
-        }
-        0x79    =>  { //
-
-        }
-        0x7A    =>  { //
-
-        }
-        0x7B    =>  { //
-
-        }
-        0x7C    =>  { //
-
-        }
-        0x7D    =>  { //
-
-        }
-        0x7E    =>  { //
-
-        }
-        0x7F    =>  { //
-
-        }
         0x80    =>  { //
 
         }
@@ -668,6 +690,54 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>) {
         0xC3    =>  { // JP a16 3 16
             cpu.reg_pc  = ((file_buf[(cpu.reg_pc+2) as usize] * 16) + file_buf[(cpu.reg_pc+1) as usize]) as u16;
         }
+        0xC4    =>  { // CALL NZ,a16 3 24/12
+
+            cpu.reg_pc  += 3;
+        }
+        0xC5    =>  { // PUSH BC 1 16
+
+            cpu.reg_pc  += 1;
+        }
+        0xC6    =>  { // ADD A,d8 2 8 Z0HC
+
+            cpu.reg_pc  += 2;
+        }
+        0xC7    =>  { // RST 00H 1 16
+
+            cpu.reg_pc  += 1;
+        }
+        0xC8    =>  { // RET Z 1 20/8
+
+            cpu.reg_pc  += 1;
+        }
+        0xC9    =>  { // RET 1 16
+
+            cpu.reg_pc  += 1;
+        }
+        0xCA    =>  { // JP Z,a16 3 16/12
+
+            cpu.reg_pc  += 3;
+        }
+        0xCB    =>  { // PREFIX CB 1 4
+
+            cpu.reg_pc  += 1;
+        }
+        0xCC    =>  { // CALL Z,a16 3 24/12
+
+            cpu.reg_pc  += 3;
+        }
+        0xCD    =>  { // CALL a16 3 24
+
+            cpu.reg_pc  += 3;
+        }
+        0xCE    =>  { // ADC A,d8 2 8 Z0HC
+            cpu.reset_n();
+            cpu.reg_pc  += 2;
+        }
+        0xCF    =>  { // RST 08H 1 16
+
+            cpu.reg_pc  += 1;
+        }
 
         0xD9    =>  { // RETI 1 16
 
@@ -678,8 +748,51 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>) {
 
             cpu.reg_pc  += 2;
         }
+        0xE1    =>  { // POP HL 1 12
 
+            cpu.reg_pc  += 1;
+        }
+        0xE2    =>  { // LD (C),A 2 8
 
+            cpu.reg_pc  += 2;
+        }
+        0xE5    =>  { // PUSH HL 1 16
+
+            cpu.reg_pc  += 1;
+        }
+        0xE6    =>  { // AND d8 2 8 Z010
+            cpu.reset_n();
+            cpu.set_h();
+            cpu.reset_c();
+            cpu.reg_pc  += 2;
+        }
+        0xE7    =>  { // RST 20H 1 16
+
+            cpu.reg_pc  += 1;
+        }
+        0xE8    =>  { // ADD SP,r8 2 16 00HC
+            cpu.reset_z();
+            cpu.reset_n();
+            cpu.reg_pc  += 2;
+        }
+        0xE9    =>  { // JP (HL) 1 4
+
+            cpu.reg_pc  += 1;
+        }
+        0xEA    =>  { // LD (a16),A 3 16
+
+            cpu.reg_pc  += 3;
+        }
+        0xEE    =>  { // XOR d8 2 8 Z000
+            cpu.reset_n();
+            cpu.reset_h();
+            cpu.reset_c();
+            cpu.reg_pc  += 2;
+        }
+        0xEF    =>  { // RST 28H 1 16
+
+            cpu.reg_pc  += 1;
+        }
         0xF0    =>  { // LDH A,(a8) 2 12
 
             cpu.reg_pc  += 2;
@@ -713,7 +826,7 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>) {
         }
         0xFB    =>  { //
 
-        }
+        }*/
         0xFE    =>  { // CP d8 2 8
 
             cpu.reg_pc  += 2;
@@ -722,10 +835,9 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>) {
 
             cpu.reg_pc  += 1;
         }
-        */
-        0xD3 | 0xDB | 0xDD | 0xE3 | 0xE4 | 0xEB | 0xEC | 0xED | 0xF4 | 0xFC | 0xFD => { // unsupported instructions
+        0xD3|0xDB|0xDD|0xE3|0xE4|0xEB|0xEC|0xED|0xF4|0xFC|0xFD => {
             println!("Instruction 0x{:x} is not supported by the GameBoy's CPU", ins);
-            cpu.reg_pc  += 1;
+            cpu.cont    = false;
         }
         _       =>  {
             println!("Unrecognized/unimplemented instruction: 0x{:x}", ins);
