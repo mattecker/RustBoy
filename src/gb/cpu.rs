@@ -38,19 +38,19 @@ impl Cpu {
 
     // combination register getters
     pub fn get_reg_af(&self) -> u16 {
-        ((&self.reg_a * 16) + &self.reg_f) as u16
+        (((self.reg_a as u16 * 16)) + (self.reg_f as u16)) as u16
     }
 
     pub fn get_reg_bc(&self) -> u16 {
-        ((&self.reg_b * 16) + &self.reg_c) as u16
+        (((self.reg_b as u16 * 16)) + (self.reg_c as u16)) as u16
     }
 
     pub fn get_reg_de(&self) -> u16 {
-        ((&self.reg_d * 16) + &self.reg_e) as u16
+        (((self.reg_d as u16 * 16)) + (self.reg_e as u16)) as u16
     }
 
     pub fn get_reg_hl(&self) -> u16 {
-        ((&self.reg_h * 16) + &self.reg_l) as u16
+        (((self.reg_h as u16 * 16)) + (self.reg_l as u16)) as u16
     }
 
     // combination register setters

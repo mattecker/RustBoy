@@ -458,6 +458,70 @@ pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: 
         0xBD    => /*RES 7,L 2 8*/ reset_bit_nr(&mut cpu.reg_l, 7, &mut cpu.reg_pc),
         //0xBE    => /*
         0xBF    => /*RES 7,A 2 8*/ reset_bit_nr(&mut cpu.reg_a, 7, &mut cpu.reg_pc),
+        0xC0    => /*SET 0,B 2 8*/ set_bit_nr(&mut cpu.reg_b, 0, &mut cpu.reg_pc),
+        0xC1    => /*SET 0,C 2 8*/ set_bit_nr(&mut cpu.reg_c, 0, &mut cpu.reg_pc),
+        0xC2    => /*SET 0,D 2 8*/ set_bit_nr(&mut cpu.reg_d, 0, &mut cpu.reg_pc),
+        0xC3    => /*SET 0,E 2 8*/ set_bit_nr(&mut cpu.reg_e, 0, &mut cpu.reg_pc),
+        0xC4    => /*SET 0,H 2 8*/ set_bit_nr(&mut cpu.reg_h, 0, &mut cpu.reg_pc),
+        0xC5    => /*SET 0,L 2 8*/ set_bit_nr(&mut cpu.reg_l, 0, &mut cpu.reg_pc),
+        //0xC6    => /*SET 0,(HL) 2 16*/
+        0xC7    => /*SET 0,A 2 8*/ set_bit_nr(&mut cpu.reg_a, 0, &mut cpu.reg_pc),
+        0xC8    => /*SET 1,B 2 8*/ set_bit_nr(&mut cpu.reg_b, 1, &mut cpu.reg_pc),
+        0xC9    => /*SET 1,C 2 8*/ set_bit_nr(&mut cpu.reg_c, 1, &mut cpu.reg_pc),
+        0xCA    => /*SET 1,D 2 8*/ set_bit_nr(&mut cpu.reg_d, 1, &mut cpu.reg_pc),
+        0xCB    => /*SET 1,E 2 8*/ set_bit_nr(&mut cpu.reg_e, 1, &mut cpu.reg_pc),
+        0xCC    => /*SET 1,H 2 8*/ set_bit_nr(&mut cpu.reg_h, 1, &mut cpu.reg_pc),
+        0xCD    => /*SET 1,L 2 8*/ set_bit_nr(&mut cpu.reg_l, 1, &mut cpu.reg_pc),
+        //0xCE    => /*
+        0xCF    => /*SET 1,A 2 8*/ set_bit_nr(&mut cpu.reg_a, 1, &mut cpu.reg_pc),
+        0xD0    => /*SET 2,B 2 8*/ set_bit_nr(&mut cpu.reg_b, 2, &mut cpu.reg_pc),
+        0xD1    => /*SET 2,C 2 8*/ set_bit_nr(&mut cpu.reg_c, 2, &mut cpu.reg_pc),
+        0xD2    => /*SET 2,D 2 8*/ set_bit_nr(&mut cpu.reg_d, 2, &mut cpu.reg_pc),
+        0xD3    => /*SET 2,E 2 8*/ set_bit_nr(&mut cpu.reg_e, 2, &mut cpu.reg_pc),
+        0xD4    => /*SET 2,H 2 8*/ set_bit_nr(&mut cpu.reg_h, 2, &mut cpu.reg_pc),
+        0xD5    => /*SET 2,L 2 8*/ set_bit_nr(&mut cpu.reg_l, 2, &mut cpu.reg_pc),
+        //0xD6    => /*
+        0xD7    => /*SET 2,A 2 8*/ set_bit_nr(&mut cpu.reg_a, 2, &mut cpu.reg_pc),
+        0xD8    => /*SET 3,B 2 8*/ set_bit_nr(&mut cpu.reg_b, 3, &mut cpu.reg_pc),
+        0xD9    => /*SET 3,C 2 8*/ set_bit_nr(&mut cpu.reg_c, 3, &mut cpu.reg_pc),
+        0xDA    => /*SET 3,D 2 8*/ set_bit_nr(&mut cpu.reg_d, 3, &mut cpu.reg_pc),
+        0xDB    => /*SET 3,E 2 8*/ set_bit_nr(&mut cpu.reg_e, 3, &mut cpu.reg_pc),
+        0xDC    => /*SET 3,H 2 8*/ set_bit_nr(&mut cpu.reg_h, 3, &mut cpu.reg_pc),
+        0xDD    => /*SET 3,L 2 8*/ set_bit_nr(&mut cpu.reg_l, 3, &mut cpu.reg_pc),
+        //0xDE    => /*
+        0xDF    => /*SET 3,A 2 8*/ set_bit_nr(&mut cpu.reg_a, 3, &mut cpu.reg_pc),
+        0xE0    => /*SET 4,B 2 8*/ set_bit_nr(&mut cpu.reg_b, 4, &mut cpu.reg_pc),
+        0xE1    => /*SET 4,C 2 8*/ set_bit_nr(&mut cpu.reg_c, 4, &mut cpu.reg_pc),
+        0xE2    => /*SET 4,D 2 8*/ set_bit_nr(&mut cpu.reg_d, 4, &mut cpu.reg_pc),
+        0xE3    => /*SET 4,E 2 8*/ set_bit_nr(&mut cpu.reg_e, 4, &mut cpu.reg_pc),
+        0xE4    => /*SET 4,H 2 8*/ set_bit_nr(&mut cpu.reg_h, 4, &mut cpu.reg_pc),
+        0xE5    => /*SET 4,L 2 8*/ set_bit_nr(&mut cpu.reg_l, 4, &mut cpu.reg_pc),
+        //0xE6    => /*
+        0xE7    => /*SET 4,A 2 8*/ set_bit_nr(&mut cpu.reg_a, 4, &mut cpu.reg_pc),
+        0xE8    => /*SET 5,B 2 8*/ set_bit_nr(&mut cpu.reg_b, 5, &mut cpu.reg_pc),
+        0xE9    => /*SET 5,C 2 8*/ set_bit_nr(&mut cpu.reg_c, 5, &mut cpu.reg_pc),
+        0xEA    => /*SET 5,D 2 8*/ set_bit_nr(&mut cpu.reg_d, 5, &mut cpu.reg_pc),
+        0xEB    => /*SET 5,E 2 8*/ set_bit_nr(&mut cpu.reg_e, 5, &mut cpu.reg_pc),
+        0xEC    => /*SET 5,H 2 8*/ set_bit_nr(&mut cpu.reg_h, 5, &mut cpu.reg_pc),
+        0xED    => /*SET 5,L 2 8*/ set_bit_nr(&mut cpu.reg_l, 5, &mut cpu.reg_pc),
+        //0xEE    => /*
+        0xEF    => /*SET 5,A 2 8*/ set_bit_nr(&mut cpu.reg_a, 5, &mut cpu.reg_pc),
+        0xF0    => /*SET 6,B 2 8*/ set_bit_nr(&mut cpu.reg_b, 6, &mut cpu.reg_pc),
+        0xF1    => /*SET 6,C 2 8*/ set_bit_nr(&mut cpu.reg_c, 6, &mut cpu.reg_pc),
+        0xF2    => /*SET 6,D 2 8*/ set_bit_nr(&mut cpu.reg_d, 6, &mut cpu.reg_pc),
+        0xF3    => /*SET 6,E 2 8*/ set_bit_nr(&mut cpu.reg_e, 6, &mut cpu.reg_pc),
+        0xF4    => /*SET 6,H 2 8*/ set_bit_nr(&mut cpu.reg_h, 6, &mut cpu.reg_pc),
+        0xF5    => /*SET 6,L 2 8*/ set_bit_nr(&mut cpu.reg_l, 6, &mut cpu.reg_pc),
+        //0xF6    => /*
+        0xF7    => /*SET 6,A 2 8*/ set_bit_nr(&mut cpu.reg_a, 6, &mut cpu.reg_pc),
+        0xF8    => /*SET 7,B 2 8*/ set_bit_nr(&mut cpu.reg_b, 7, &mut cpu.reg_pc),
+        0xF9    => /*SET 7,C 2 8*/ set_bit_nr(&mut cpu.reg_c, 7, &mut cpu.reg_pc),
+        0xFA    => /*SET 7,D 2 8*/ set_bit_nr(&mut cpu.reg_d, 7, &mut cpu.reg_pc),
+        0xFB    => /*SET 7,E 2 8*/ set_bit_nr(&mut cpu.reg_e, 7, &mut cpu.reg_pc),
+        0xFC    => /*SET 7,H 2 8*/ set_bit_nr(&mut cpu.reg_h, 7, &mut cpu.reg_pc),
+        0xFD    => /*SET 7,L 2 8*/ set_bit_nr(&mut cpu.reg_l, 7, &mut cpu.reg_pc),
+        //0xFE    => /*
+        0xFF    => /*SET 7,A 2 8*/ set_bit_nr(&mut cpu.reg_a, 7, &mut cpu.reg_pc),
         _       => {
             println!("Unrecognized/unimplemented instruction: 0xCB{:x}", ins);
             cpu.cont    = false;
@@ -465,16 +529,17 @@ pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: 
     }
 }
 
-fn set_bit(reg: &mut u8, n: u8) {
+fn set_bit_nr(reg: &mut u8, n: u8, reg_pc: &mut u16) {
     if !get_bit_at_8(*reg, n) {
         *reg += 2^n;
     }
+    *reg_pc += 2;
 }
 fn reset_bit_nr(reg: &mut u8, n: u8, reg_pc: &mut u16) {
     if get_bit_at_8(*reg, n) {
         *reg -= 2^n;
     }
-    reg_pc  += 2;
+    *reg_pc += 2;
 }
 
 fn get_bit_at_16(input: u16, n: u8) -> bool {
