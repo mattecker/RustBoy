@@ -1,1 +1,3 @@
 target/
+dev/
+.DS_Store
