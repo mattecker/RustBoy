@@ -151,7 +151,10 @@ impl Cpu {
 				println!("Interrupts disabled");
 			}
 			-2	=>	self.interrupt_count	+= 1,
-			_	=>	println!("Error: invalid interrupt_count value in cpu.interrupt_handler"),
+			_	=>	{
+				println!("Error: invalid interrupt_count value in cpu.interrupt_handler");
+				self.cont	= false;
+			}
 		}
 	}
 }

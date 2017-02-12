@@ -793,11 +793,11 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 1;
         }
         0xD3|0xDB|0xDD|0xE3|0xE4|0xEB|0xEC|0xED|0xF4|0xFC|0xFD => {
-            println!("Instruction 0x{:x} is not supported by the GameBoy's CPU", ins);
+            println!("Instruction 0x{:02X} is not supported by the GameBoy's CPU", ins);
             cpu.cont    = false;
         }
         _       => {
-            println!("Unrecognized/unimplemented instruction: 0x{:x}", ins);
+            println!("Unrecognized/unimplemented instruction: 0x{:02X}", ins);
             cpu.cont    = false;
         }
     }
