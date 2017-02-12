@@ -664,11 +664,11 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0xC8    => { // RET Z 1 20/8
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0xC9    => { // RET 1 16
 
             cpu.reg_pc  += 1;
-        }
+        }/*
         0xCA    => { // JP Z,a16 3 16/12
 
             cpu.reg_pc  += 3;
@@ -680,11 +680,11 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0xCC    => { // CALL Z,a16 3 24/12
 
             cpu.reg_pc  += 3;
-        }
-        0xCD    => { // CALL a16 3 24
-
-            cpu.reg_pc  += 3;
         }*/
+        0xCD    => { // CALL a16 3 24
+			// TODO: push address of next instruction onto stack
+			cpu.reg_pc  = ((file_buf[(cpu.reg_pc+2) as usize] as u16 * 0x100) + file_buf[(cpu.reg_pc+1) as usize] as u16) as u16;
+        }
         0xCE    => { // ADC A,d8 2 8 Z0HC
             cpu.reset_n();
             cpu.reg_pc  += 2;
@@ -697,12 +697,12 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0xD9    => { // RETI 1 16
 
             cpu.reg_pc  += 1;
-        }
+        }*/
 
         0xE0    => { // LDH (a8),A 2 12
-
+			memory.memory_array[(0xFF00 + file_buf[(cpu.reg_pc+1) as usize]) as usize]	= cpu.reg_a;
             cpu.reg_pc  += 2;
-        }
+        }/*
         0xE1    => { // POP HL 1 12
 
             cpu.reg_pc  += 1;
