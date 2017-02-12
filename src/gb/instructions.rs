@@ -8,7 +8,10 @@ use gb::memory::Memory;
 // will hopefully look cleaner than individual functions when executing an instruction
 // comment format: [name] [parameters (if any)] [byte length] [cycles] [flags affected (if any)]
 pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8) {
-    println!("Executing instruction 0x{:02X}", ins);
+    println!("cpu.reg_pc: 0x{:X}", cpu.reg_pc);
+    if ins != 0x00 {
+        println!("Executing instruction 0x{:X}", ins);
+    }
 
     match ins {
         0x00    => { // NOP 1 4
@@ -640,7 +643,7 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         }
 
         0xC3    => { // JP a16 3 16
-            cpu.reg_pc  = ((file_buf[(cpu.reg_pc+2) as usize] * 16) + file_buf[(cpu.reg_pc+1) as usize]) as u16;
+            cpu.reg_pc  = ((file_buf[(cpu.reg_pc+2) as usize] as u16 * 0x100) + file_buf[(cpu.reg_pc+1) as usize] as u16) as u16;
         }
         0xC4    => { // CALL NZ,a16 3 24/12
 

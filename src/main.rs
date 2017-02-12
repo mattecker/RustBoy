@@ -6,6 +6,7 @@ use std::fs;
 use std::io::Read;
 use std::path::Path;
 
+#[allow(dead_code)]
 #[allow(unused_assignments)]
 #[allow(unused_mut)]
 #[allow(unused_variables)]
