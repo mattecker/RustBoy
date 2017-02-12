@@ -30,6 +30,10 @@ fn main() {
         }
 
         ins = file_buf[cpu.reg_pc as usize];
+
+		if cpu.interrupt_count != 0 {
+			cpu.interrupt_handler();
+		}
     }
 }
 

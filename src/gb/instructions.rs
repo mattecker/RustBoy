@@ -10,7 +10,7 @@ use gb::memory::Memory;
 pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8) {
     println!("cpu.reg_pc: 0x{:X}", cpu.reg_pc);
     if ins != 0x00 {
-        println!("Executing instruction 0x{:X}", ins);
+        println!("Executing instruction 0x{:02X}", ins);
     }
 
     match ins {
@@ -243,7 +243,7 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
 
         }
         0x31    => { // LD SP,d16 3 12
-            cpu.reg_sp  = ((file_buf[(cpu.reg_pc+2) as usize] * 16) + file_buf[(cpu.reg_pc+1) as usize]) as u16;
+            cpu.reg_sp  = ((file_buf[(cpu.reg_pc+2) as usize] as u16 * 0x100) + file_buf[(cpu.reg_pc+1) as usize] as u16) as u16;
             cpu.reg_pc  += 3;
         }
         0x32    => { // LD (HL-),A 1 8
@@ -644,7 +644,7 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
 
         0xC3    => { // JP a16 3 16
             cpu.reg_pc  = ((file_buf[(cpu.reg_pc+2) as usize] as u16 * 0x100) + file_buf[(cpu.reg_pc+1) as usize] as u16) as u16;
-        }
+        }/*
         0xC4    => { // CALL NZ,a16 3 24/12
 
             cpu.reg_pc  += 3;
@@ -684,11 +684,11 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0xCD    => { // CALL a16 3 24
 
             cpu.reg_pc  += 3;
-        }
+        }*/
         0xCE    => { // ADC A,d8 2 8 Z0HC
             cpu.reset_n();
             cpu.reg_pc  += 2;
-        }
+        }/*
         0xCF    => { // RST 08H 1 16
 
             cpu.reg_pc  += 1;
@@ -714,28 +714,28 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0xE5    => { // PUSH HL 1 16
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0xE6    => { // AND d8 2 8 Z010
             cpu.reset_n();
             cpu.set_h();
             cpu.reset_c();
             cpu.reg_pc  += 2;
-        }
+        }/*
         0xE7    => { // RST 20H 1 16
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0xE8    => { // ADD SP,r8 2 16 00HC
             cpu.reset_z();
             cpu.reset_n();
             cpu.reg_pc  += 2;
-        }
+        }/*
         0xE9    => { // JP (HL) 1 4
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0xEA    => { // LD (a16),A 3 16
-
+			memory.memory_array[((file_buf[(cpu.reg_pc+2) as usize] as u16 * 0x100) + file_buf[(cpu.reg_pc+1) as usize] as u16) as usize]	= cpu.reg_a;
             cpu.reg_pc  += 3;
         }
         0xEE    => { // XOR d8 2 8 Z000
@@ -743,7 +743,7 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reset_h();
             cpu.reset_c();
             cpu.reg_pc  += 2;
-        }
+        }/*
         0xEF    => { // RST 28H 1 16
 
             cpu.reg_pc  += 1;
@@ -751,16 +751,18 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0xF0    => { // LDH A,(a8) 2 12
 
             cpu.reg_pc  += 2;
-        }/*
+        }
         0xF1    => { //
 
         }
         0xF2    => { //
 
-        }
-        0xF3    => { //
-
-        }
+        }*/
+        0xF3    => { // DI 1 4
+            // disables interrupts after next instruction
+			cpu.interrupt_count	= -2;
+			cpu.reg_pc	+= 1;
+        }/*
         0xF5    => { //
 
         }
@@ -801,7 +803,11 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
     }
 }
 
-fn ld_8_ar(address: u8, reg: u8, memory: &mut Memory, reg_pc: &mut u16) {
+fn get_imm_16(file_buf: Vec<u8>, reg_pc: u16) -> u16 {
+	((file_buf[(reg_pc+2) as usize] as u16 * 0x100) + file_buf[(reg_pc+1) as usize] as u16) as u16
+}
+
+fn ld_8_ar(address: u16, reg: u8, memory: &mut Memory, reg_pc: &mut u16) {
 
 }
 fn ld_8_ra(reg: &mut u8, memory: &Memory, reg_pc: &mut u16) {

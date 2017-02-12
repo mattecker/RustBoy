@@ -13,7 +13,9 @@ pub struct Cpu { // some variables public for debugging at the moment
     pub reg_sp: u16,// stack pointer
     pub reg_pc: u16,// program counter
 
-    pub cont:   bool
+    pub cont:   bool,
+	pub allow_interrupts:	bool,
+	pub interrupt_count:	i8
 }
 
 #[allow(dead_code)]
@@ -33,6 +35,8 @@ impl Cpu {
         	reg_pc:	0x0100,
 
             cont:   true,
+			allow_interrupts:	false,
+			interrupt_count:	0,
         }
     }
 
@@ -133,6 +137,23 @@ impl Cpu {
     }
 
 
+	pub fn interrupt_handler(&mut self) {
+		match self.interrupt_count {
+			2	=>	self.interrupt_count	-= 1,
+			1	=>	{
+				self.allow_interrupts	= true;
+				self.interrupt_count	-= 1;
+				println!("Interrupts enabled");
+			}
+			-1	=>	{
+				self.allow_interrupts	= false;
+				self.interrupt_count	+= 1;
+				println!("Interrupts disabled");
+			}
+			-2	=>	self.interrupt_count	+= 1,
+			_	=>	println!("Error: invalid interrupt_count value in cpu.interrupt_handler"),
+		}
+	}
 }
 
 // modified from https://www.reddit.com/r/rust/comments/3xgeo0/biginner_question_how_can_i_get_the_value_of_a/cy4ei5n/
