@@ -666,7 +666,7 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 1;
         }*/
         0xC9    => { // RET 1 16
-
+			
             cpu.reg_pc  += 1;
         }/*
         0xCA    => { // JP Z,a16 3 16/12
