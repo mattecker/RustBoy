@@ -45,4 +45,6 @@ impl Memory {
         self.memory_array[0xFF4B]    = 0x00;
         self.memory_array[0xFFFF]    = 0x00; // Interrupt register
     }
+
+	
 }

@@ -8,7 +8,7 @@ use gb::memory::Memory;
 // will hopefully look cleaner than individual functions when executing an instruction
 // comment format: [name] [parameters (if any)] [byte length] [cycles] [flags affected (if any)]
 pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8) {
-    println!("cpu.reg_pc: 0x{:X}", cpu.reg_pc);
+    println!("cpu.reg_pc: 0x{:04X}", cpu.reg_pc);
     if ins != 0x00 {
         println!("Executing instruction 0x{:02X}", ins);
     }
@@ -666,8 +666,8 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 1;
         }*/
         0xC9    => { // RET 1 16
-			
-            cpu.reg_pc  += 1;
+			cpu.reg_pc	= stack_pop(&mut cpu.reg_sp, memory) as u16;
+			cpu.reg_pc	+= (stack_pop(&mut cpu.reg_sp, memory) as u16 * 0x100) as u16;
         }/*
         0xCA    => { // JP Z,a16 3 16/12
 
@@ -682,7 +682,9 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 3;
         }*/
         0xCD    => { // CALL a16 3 24
-			// TODO: push address of next instruction onto stack
+			let mut pushing: u16	= cpu.reg_pc + 3;
+			stack_push(&mut cpu.reg_sp, memory, (cpu.reg_pc / 0x100) as u8);
+			stack_push(&mut cpu.reg_sp, memory, cpu.reg_pc as u8);
 			cpu.reg_pc  = ((file_buf[(cpu.reg_pc+2) as usize] as u16 * 0x100) + file_buf[(cpu.reg_pc+1) as usize] as u16) as u16;
         }
         0xCE    => { // ADC A,d8 2 8 Z0HC
@@ -825,4 +827,15 @@ fn ld_8_rr(reg1: &mut u8, reg2: u8, reg_pc: &mut u16) {
 fn ld_8_test(value1: &mut u8, value2: u8, reg_pc: &mut u16, length: u16, cycles: u8) {
     *value1 = value2;
     *reg_pc += length;
+}
+
+pub fn stack_push(reg_sp: &mut u16, memory: &mut Memory, pushed: u8) {
+	memory.memory_array[*reg_sp as usize]	= pushed;
+	*reg_sp	-= 1;
+}
+
+pub fn stack_pop(reg_sp: &mut u16, memory: &mut Memory) -> u8 {
+	*reg_sp	+= 1;
+	let mut new_value: u8	= memory.memory_array[*reg_sp as usize] as u8;
+	new_value
 }

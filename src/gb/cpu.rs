@@ -1,5 +1,7 @@
+use gb::memory::Memory;
 #[allow(dead_code)]
 #[derive(Default)]
+
 pub struct Cpu { // some variables public for debugging at the moment
     pub reg_a:  u8,	// accumulator
     pub reg_b:  u8,
@@ -42,19 +44,19 @@ impl Cpu {
 
     // combination register getters
     pub fn get_reg_af(&self) -> u16 {
-        (((self.reg_a as u16 * 16)) + (self.reg_f as u16)) as u16
+        (((self.reg_a as u16 * 0x100)) + (self.reg_f as u16)) as u16
     }
 
     pub fn get_reg_bc(&self) -> u16 {
-        (((self.reg_b as u16 * 16)) + (self.reg_c as u16)) as u16
+        (((self.reg_b as u16 * 0x100)) + (self.reg_c as u16)) as u16
     }
 
     pub fn get_reg_de(&self) -> u16 {
-        (((self.reg_d as u16 * 16)) + (self.reg_e as u16)) as u16
+        (((self.reg_d as u16 * 0x100)) + (self.reg_e as u16)) as u16
     }
 
     pub fn get_reg_hl(&self) -> u16 {
-        (((self.reg_h as u16 * 16)) + (self.reg_l as u16)) as u16
+        (((self.reg_h as u16 * 0x100)) + (self.reg_l as u16)) as u16
     }
 
     // combination register setters
@@ -157,6 +159,8 @@ impl Cpu {
 			}
 		}
 	}
+
+	
 }
 
 // modified from https://www.reddit.com/r/rust/comments/3xgeo0/biginner_question_how_can_i_get_the_value_of_a/cy4ei5n/
