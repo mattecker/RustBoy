@@ -1,15 +1,12 @@
 use gb::cpu::Cpu;
 use gb::memory::Memory;
-#[allow(dead_code)]
-#[allow(unused_assignments)]
-#[allow(unused_mut)]
-#[allow(unused_variables)]
 
 // will hopefully look cleaner than individual functions when executing an instruction
 // comment format: [name] [parameters (if any)] [byte length] [cycles] [flags affected (if any)]
 pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8) {
-    println!("cpu.reg_pc: 0x{:04X}", cpu.reg_pc);
+
     if ins != 0x00 {
+		println!("cpu.reg_pc: 0x{:04X}", cpu.reg_pc);
         println!("Executing instruction 0x{:02X}", ins);
     }
 
@@ -64,13 +61,13 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 3;
         }
         0x09    => { // ADD HL,BC 1 8 -0HC
-
+			//	TODO: figure what I have to do
             cpu.reset_n();
             cpu.reg_pc  += 1;
         }
         0x0A    => { // LD A,(BC) 1 8
             let address = memory.memory_array[cpu.get_reg_bc() as usize];
-            ld_8_test(&mut cpu.reg_a, address,&mut cpu.reg_pc, 1, 8);
+            ld_8_test(&mut cpu.reg_a, address, &mut cpu.reg_pc, 1, 8);
         }
         0x0B    => { // DEC BC 1 8
             let new_reg_bc: u16 = cpu.get_reg_bc() - 1;
@@ -97,31 +94,33 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.set_n();
             cpu.reg_pc  += 1;
         }
-        0x0E    => /*LD C,d8 2 8*/ld_8_rd(&mut cpu.reg_c, &file_buf, &mut cpu.reg_pc),
+        0x0E    => /*LD C,d8 2 8*/ld_8_rd(&mut cpu.reg_c, file_buf, &mut cpu.reg_pc),
         0x0F    => { // RRCA 1 4 000C
             cpu.reset_z();
             cpu.reset_n();
             cpu.reset_h();
             cpu.reg_pc  += 1;
         }
+		/*
         0x10    => { // STOP 0 2 4
 
             cpu.reg_pc  += 2;
-        }
+        }*/
         0x11    => { // LD DE,d16 3 12
             cpu.reg_d   = file_buf[(cpu.reg_pc+2) as usize];
             cpu.reg_e   = file_buf[(cpu.reg_pc+1) as usize];
             cpu.reg_pc  += 3;
         }
         0x12    => { // LD (DE),A 1 8
-            cpu.reg_e   = cpu.reg_a;
-            cpu.reg_d   = 0b00000000u8;
+			let reg_a_16	= cpu.reg_a as u16;
+            cpu.set_reg_de(reg_a_16);
             cpu.reg_pc  += 1;
         }
+		/*
         0x13    => { // INC DE 1 8
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x14    => { // INC D 1 4 Z0H-
             cpu.reg_d   += 1;
             if cpu.reg_d == 0 {
@@ -151,19 +150,20 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         }
         0x18    => { // JR r8 2 12
             cpu.reg_pc  += file_buf[(cpu.reg_pc+1) as usize] as u16;
-        }
+			cpu.cont	= false;
+        }/*
         0x19    => { // ADD HL,DE 1 8
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x1A    => { // LD A,(DE) 1 8
             cpu.reg_a   = memory.memory_array[cpu.get_reg_de() as usize];
             cpu.reg_pc  += 1;
-        }
+        }/*
         0x1B    => { // DEC DE 1 8
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x1C    => { // INC E 1 4
             cpu.reg_e   += 1;
             cpu.reg_pc  += 1;
@@ -173,19 +173,23 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 1;
         }
         0x1E    => /*LD E,d8 2 8*/ld_8_rd(&mut cpu.reg_e, &file_buf, &mut cpu.reg_pc),
+		/*
         0x1F    => { // RRA 1 4
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x20    => { // JR NZ,r8 2 12/8
-
-            cpu.reg_pc  += 2;
+			if cpu.get_z() {
+            	cpu.reg_pc  += 2;
+			} else {
+				cpu.reg_pc  += file_buf[(cpu.reg_pc+1) as usize] as u16; // TODO: fix this, should read as signed not unsigned
+			}
         }
         0x21    => { // LD HL,d16 3 12
-            cpu.reg_h   = file_buf[(cpu.reg_pc+2) as usize];
-            cpu.reg_l   = file_buf[(cpu.reg_pc+1) as usize];
+			let reg_pc_copy	= cpu.reg_pc;
+            cpu.set_reg_hl(get_imm_16(file_buf, reg_pc_copy));
             cpu.reg_pc  += 3;
-        }
+        }/*
         0x22    => { // LD (HL+),A 1 8
 
             cpu.reg_pc  += 1;
@@ -193,7 +197,7 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0x23    => { // INC HL 1 8
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x24    => { // INC H 1 4
             cpu.reg_h   += 1;
             cpu.reg_pc  += 1;
@@ -203,29 +207,33 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 1;
         }
         0x26    => /*LD H,d8 2 8*/ld_8_rd(&mut cpu.reg_h, &file_buf, &mut cpu.reg_pc),
+		/*
         0x27    => { // DAA 1 4
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x28    => { // JR Z,r8 2 12/8
             if cpu.get_z() {
                 cpu.reg_pc  += file_buf[(cpu.reg_pc+1) as usize] as u16;
             } else {
                 cpu.reg_pc  += 2;
             }
-        }
+        }/*
         0x29    => { // ADD HL,HL 1 8
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x2A    => { // LD A,(HL+) 1 8
-
+			cpu.reg_a   = memory.memory_array[cpu.get_reg_hl() as usize];
+			let temp: u16	= cpu.get_reg_hl() + 1;
+			cpu.set_reg_hl(temp);
             cpu.reg_pc  += 1;
         }
+		/*
         0x2B    => { // DEC HL 1 8
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x2C    => { // INC L 1 4
             cpu.reg_l   += 1;
             cpu.reg_pc  += 1;
@@ -235,25 +243,27 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 1;
         }
         0x2E    => /*LD L,d8 2 8*/ld_8_rd(&mut cpu.reg_l, &file_buf, &mut cpu.reg_pc),
+		/*
         0x2F    => { // CPL 1 4
 
             cpu.reg_pc  += 1;
         }
         0x30    => { // JR NC,r8 2 12/8
 
-        }
+        }*/
         0x31    => { // LD SP,d16 3 12
             cpu.reg_sp  = get_imm_16(file_buf, cpu.reg_pc);
 			println!("{:04X}", cpu.reg_sp);
             cpu.reg_pc  += 3;
         }
+		/*
         0x32    => { // LD (HL-),A 1 8
 
-        }
+        }*/
         0x33    => { // INC SP 1 8
             cpu.reg_sp  += 1;
             cpu.reg_pc  += 1;
-        }
+        }/*
         0x34    => { // INC (HL) 1 12
 
             cpu.reg_pc  += 1;
@@ -261,12 +271,12 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0x35    => { // DEC (HL) 1 12
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x36    => { // LD (HL),d8 2 12
             let data: u16   = file_buf[(cpu.reg_pc+1) as usize] as u16;
             cpu.set_reg_hl(data);
             cpu.reg_pc  += 2;
-        }
+        }/*
         0x37    => { // SCF 1 4
 
             cpu.reg_pc  += 1;
@@ -281,7 +291,7 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0x3A    => { // LD A,(HL-) 1 8
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x3B    => { // DEC SP 1 8
             cpu.reg_sp  -= 1;
             cpu.reg_pc  += 1;
@@ -294,11 +304,12 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_a   -= 1;
             cpu.reg_pc  += 1;
         }
-        0x3E    => /*LD A,d8 2 8*/ld_8_rd(&mut cpu.reg_a, &file_buf, &mut cpu.reg_pc),
+        0x3E    => /*LD A,d8 2 8*/ld_8_rd(&mut cpu.reg_a, file_buf, &mut cpu.reg_pc),
+		/*
         0x3F    => { // CCF 1 4
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x40    => /*LD B,B 1 4*/ cpu.reg_pc  += 1,
         0x41    => /*LD B,C 1 4*/ ld_8_rr(&mut cpu.reg_b, cpu.reg_c, &mut cpu.reg_pc),
         0x42    => /*LD B,D 1 4*/ ld_8_rr(&mut cpu.reg_b, cpu.reg_d, &mut cpu.reg_pc),
@@ -316,10 +327,11 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0x4B    => /*LD C,E 1 4*/ ld_8_rr(&mut cpu.reg_c, cpu.reg_e, &mut cpu.reg_pc),
         0x4C    => /*LD C,H 1 4*/ ld_8_rr(&mut cpu.reg_c, cpu.reg_h, &mut cpu.reg_pc),
         0x4D    => /*LD C,L 1 4*/ ld_8_rr(&mut cpu.reg_c, cpu.reg_l, &mut cpu.reg_pc),
+		/* TODO: just call the function you made for this
         0x4E    => { //LD C,(HL) 1 8
             //cpu.reg_c   = ;
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x4F    => /*LD C,A 1 4*/ ld_8_rr(&mut cpu.reg_c, cpu.reg_a, &mut cpu.reg_pc),
         0x50    => /*LD D,B 1 4*/ ld_8_rr(&mut cpu.reg_d, cpu.reg_b, &mut cpu.reg_pc),
         0x51    => /*LD D,C 1 4*/ ld_8_rr(&mut cpu.reg_d, cpu.reg_c, &mut cpu.reg_pc),
@@ -454,11 +466,11 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0x75    => { // LD (HL),L 1 8
             memory.memory_array[cpu.get_reg_hl() as usize]  = cpu.reg_l;
             cpu.reg_pc  += 1;
-        }
+        }/*
         0x76    => { // HALT 1 4
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0x77    => { // LD (HL),A 1 8
             memory.memory_array[cpu.get_reg_hl() as usize]  = cpu.reg_a;
             cpu.reg_pc  += 1;
@@ -482,8 +494,6 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0x7C    => { // LD A,H 1 4
             cpu.reg_a   = cpu.reg_h;
             cpu.reg_pc  += 1;
-
-			cpu.cont	= false;
         }
         0x7D    => { // LD A,L 1 4
             cpu.reg_a   = cpu.reg_l;
@@ -646,7 +656,6 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         }
 
         0xC3    => { // JP a16 3 16
-            //cpu.reg_pc  = ((file_buf[(cpu.reg_pc+2) as usize] as u16 * 0x100) + file_buf[(cpu.reg_pc+1) as usize] as u16) as u16;
 			cpu.reg_pc	= get_imm_16(file_buf, cpu.reg_pc);
         }/*
         0xC4    => { // CALL NZ,a16 3 24/12
@@ -789,7 +798,7 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         }
         0xFB    => { //
 
-        }*/
+        }
         0xFE    => { // CP d8 2 8
 
             cpu.reg_pc  += 2;
@@ -797,7 +806,7 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         0xFF    => { // RST 38H 1 16
 
             cpu.reg_pc  += 1;
-        }
+        }*/
         0xD3|0xDB|0xDD|0xE3|0xE4|0xEB|0xEC|0xED|0xF4|0xFC|0xFD => {
             println!("Instruction 0x{:02X} is not supported by the GameBoy's CPU", ins);
             cpu.cont    = false;
@@ -810,7 +819,11 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
 }
 
 fn get_imm_16(file_buf: &Vec<u8>, reg_pc: u16) -> u16 {
-	((file_buf[(reg_pc+2) as usize] as u16 * 0x100) + file_buf[(reg_pc+1) as usize] as u16) as u16
+	//((file_buf[(reg_pc+2) as usize] as u16 * 0x100) + file_buf[(reg_pc+1) as usize] as u16) as u16
+
+	let temp	= ((file_buf[(reg_pc+2) as usize] as u16 * 0x100) + file_buf[(reg_pc+1) as usize] as u16) as u16;
+	println!("{:04X}", temp);
+	temp
 }
 
 fn ld_8_ar(address: u16, reg: u8, memory: &mut Memory, reg_pc: &mut u16) {

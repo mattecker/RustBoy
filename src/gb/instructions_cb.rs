@@ -227,10 +227,10 @@ pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: 
         0x45    => { //BIT b,L 2 8
 			let reg: u8	= cpu.reg_l;
 			bit_br(cpu, file_buf, reg);
-		}
+		}/*
         0x46    => { //BIT b,(HL) 2 16
 
-		}
+		}*/
         0x47    => { //BIT b,A 2 8
 			let reg: u8	= cpu.reg_a;
 			bit_br(cpu, file_buf, reg);
@@ -533,7 +533,7 @@ pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: 
         //0xFE    => /*
         0xFF    => /*SET 7,A 2 8*/ set_bit_nr(&mut cpu.reg_a, 7, &mut cpu.reg_pc),
         _       => {
-            println!("Unrecognized/unimplemented instruction: 0xCB{:x}", ins);
+            println!("Unrecognized/unimplemented instruction: 0xCB{:X}", ins);
             cpu.cont    = false;
         }
     }

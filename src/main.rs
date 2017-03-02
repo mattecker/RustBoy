@@ -1,15 +1,10 @@
 mod gb;
 
-#[allow(unused_imports)]
 use std::env;
 use std::fs;
 use std::io::Read;
 use std::path::Path;
 
-#[allow(dead_code)]
-#[allow(unused_assignments)]
-#[allow(unused_mut)]
-#[allow(unused_variables)]
 fn main() {
     let 	file_name	= std::env::args().nth(1).unwrap(); // unsafe, need error handling
     let     file_buf    = load_rom(file_name);
