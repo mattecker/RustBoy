@@ -150,7 +150,6 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
         }
         0x18    => { // JR r8 2 12
             cpu.reg_pc  += file_buf[(cpu.reg_pc+1) as usize] as u16;
-			cpu.cont	= false;
         }/*
         0x19    => { // ADD HL,DE 1 8
 
@@ -695,10 +694,13 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             cpu.reg_pc  += 3;
         }*/
         0xCD    => { // CALL a16 3 24
-			let mut pushing: u16	= cpu.reg_pc + 3;
-			stack_push(&mut cpu.reg_sp, memory, (cpu.reg_pc / 0x100) as u8);
-			stack_push(&mut cpu.reg_sp, memory, cpu.reg_pc as u8);
+			cpu.reg_pc	+= 3;
+			let temp: u16	= cpu.reg_pc / 0x100;
+			stack_push(&mut cpu.reg_sp, memory, temp as u8);
+			stack_push(&mut cpu.reg_sp, memory, (cpu.reg_pc - (temp * 0x100)) as u8);
+			cpu.reg_pc	-= 3;
 			cpu.reg_pc  = get_imm_16(file_buf, cpu.reg_pc);
+			//cpu.reg_pc	+= 3;
         }
         0xCE    => { // ADC A,d8 2 8 Z0HC
             cpu.reset_n();
@@ -767,9 +769,13 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
 
             cpu.reg_pc  += 2;
         }
-        0xF1    => { //
-
+		*/
+        0xF1    => { // POP AF 1 12
+			cpu.reg_f	= stack_pop(&mut cpu.reg_sp, memory);
+			cpu.reg_a	= stack_pop(&mut cpu.reg_sp, memory);
+			cpu.reg_pc	+= 1;
         }
+		/*
         0xF2    => { //
 
         }*/
@@ -777,10 +783,13 @@ pub fn exec_ins(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8)
             // disables interrupts after next instruction
 			cpu.interrupt_count	= -2;
 			cpu.reg_pc	+= 1;
-        }/*
-        0xF5    => { //
-
         }
+        0xF5    => { // PUSH 1 16
+			stack_push(&mut cpu.reg_sp, memory, cpu.reg_a);
+			stack_push(&mut cpu.reg_sp, memory, cpu.reg_f);
+			cpu.reg_pc	+= 1;
+        }
+		/*
         0xF6    => { //
 
         }
@@ -822,7 +831,7 @@ fn get_imm_16(file_buf: &Vec<u8>, reg_pc: u16) -> u16 {
 	//((file_buf[(reg_pc+2) as usize] as u16 * 0x100) + file_buf[(reg_pc+1) as usize] as u16) as u16
 
 	let temp	= ((file_buf[(reg_pc+2) as usize] as u16 * 0x100) + file_buf[(reg_pc+1) as usize] as u16) as u16;
-	println!("{:04X}", temp);
+	//println!("{:04X}", temp);
 	temp
 }
 

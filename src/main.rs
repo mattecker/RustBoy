@@ -15,6 +15,8 @@ fn main() {
     memory.initialize();
     let mut ins     = file_buf[cpu.reg_pc as usize]; // keeps track of current instruction
 
+	let mut insCount	= 0;
+
     while cpu.cont {
         if ins == 0xCB {
             cpu.reg_pc  += 1;
@@ -23,6 +25,11 @@ fn main() {
         } else {
             gb::instructions::exec_ins(&mut cpu, &mut memory, &file_buf, ins);
         }
+
+		insCount	+= 1;
+		if insCount == 100 {
+			cpu.cont	= false;
+		}
 
         ins = file_buf[cpu.reg_pc as usize];
 
