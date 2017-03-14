@@ -24,14 +24,14 @@ pub struct Cpu { // some variables public for debugging at the moment
 impl Cpu {
     pub fn new() -> Cpu {
         Cpu {
-        	reg_a:	0,
-        	reg_b:  0,
-		    reg_c:  0,
-		    reg_d:  0,
-		    reg_e:  0,
-		    reg_f:  0,
-		    reg_h:  0,
-		    reg_l:  0,
+        	reg_a:	0x01,
+        	reg_b:  0x00,
+		    reg_c:  0x14,
+		    reg_d:  0x00,
+		    reg_e:  0x00,
+		    reg_f:  0x00,
+		    reg_h:  0xC0,
+		    reg_l:  0x60,
 
         	reg_sp:	0xFFFE,
         	reg_pc:	0x0100,
@@ -137,6 +137,11 @@ impl Cpu {
     pub fn get_c(&self) -> bool {
         get_bit_at_8(self.reg_f, 4)
     }
+
+	pub fn print(&self) {
+		println!("\nRegisters: \naf: {:04X} \nbc: {:04X} \nde: {:04X} \nhl: {:04X}", self.get_reg_af(), self.get_reg_bc(), self.get_reg_de(), self.get_reg_hl());
+		println!("sp: {:04X} \npc: {:04X}\n", self.reg_sp, self.reg_pc);
+	}
 
 
 	pub fn interrupt_handler(&mut self) {

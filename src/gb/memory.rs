@@ -13,6 +13,7 @@ impl Memory {
     }
 
     pub fn initialize(&mut self) {
+		self.memory_array[0xFF00]	= 0xCF;
         self.memory_array[0xFF05]    = 0x00;
         self.memory_array[0xFF06]    = 0x00;
         self.memory_array[0xFF07]    = 0x00;
@@ -46,5 +47,5 @@ impl Memory {
         self.memory_array[0xFFFF]    = 0x00; // Interrupt register
     }
 
-	
+
 }

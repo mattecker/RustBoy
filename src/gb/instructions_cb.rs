@@ -6,6 +6,7 @@ use gb::memory::Memory;
 #[allow(unused_variables)]
 
 pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8) {
+	println!("cpu.reg_pc: 0x{:04X}", cpu.reg_pc);
     println!("Executing instruction 0xCB{:02X}", ins);
 
     match ins {

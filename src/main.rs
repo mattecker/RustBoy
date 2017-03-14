@@ -15,19 +15,20 @@ fn main() {
     memory.initialize();
     let mut ins     = file_buf[cpu.reg_pc as usize]; // keeps track of current instruction
 
-	let mut insCount	= 0;
+	let mut ins_count	= 0;
 
     while cpu.cont {
+		cpu.print();
+
         if ins == 0xCB {
-            cpu.reg_pc  += 1;
-            ins = file_buf[cpu.reg_pc as usize];
+            ins = file_buf[(cpu.reg_pc + 1) as usize];
             gb::instructions_cb::exec_ins_cb(&mut cpu, &mut memory, &file_buf, ins);
         } else {
             gb::instructions::exec_ins(&mut cpu, &mut memory, &file_buf, ins);
         }
 
-		insCount	+= 1;
-		if insCount == 100 {
+		ins_count	+= 1;
+		if ins_count == 100 {
 			cpu.cont	= false;
 		}
 
