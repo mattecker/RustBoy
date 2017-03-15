@@ -1,5 +1,4 @@
 use gb::memory::Memory;
-#[allow(dead_code)]
 #[derive(Default)]
 
 pub struct Cpu { // some variables public for debugging at the moment
@@ -20,7 +19,6 @@ pub struct Cpu { // some variables public for debugging at the moment
 	pub interrupt_count:	i8
 }
 
-#[allow(dead_code)]
 impl Cpu {
     pub fn new() -> Cpu {
         Cpu {

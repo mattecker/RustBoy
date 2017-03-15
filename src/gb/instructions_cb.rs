@@ -1,3 +1,4 @@
+use gb;
 use gb::cpu::Cpu;
 use gb::memory::Memory;
 #[allow(dead_code)]
@@ -61,10 +62,18 @@ pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: 
         }
         0x10    => { //
 
-        }
-        0x11    => { //
+        }*/
+        0x11    => { // RL C 1 8 Z00C
+			if gb::cpu::get_bit_at_8(cpu.reg_c, 7 as u8) {
+				cpu.reg_c	-= 0b10000000u8;
+				cpu.set_c();
+			}
 
-        }
+			cpu.reg_c	*= 2;
+			cpu.reset_n();
+			cpu.reset_h();
+			cpu.reg_pc	+= 1;
+        }/*
         0x12    => { //
 
         }
