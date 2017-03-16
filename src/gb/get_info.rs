@@ -1,12 +1,5 @@
-#[allow(unused_imports)]
 use std::env;
 
-
-
-
-#[allow(unused_assignments)]
-#[allow(unused_mut)]
-#[allow(unused_variables)]
 pub fn ret_info (file_buf: &Vec<u8>) {
 	let mut	rom_name		= String::new();
     let mut	gameboy_color	= String::new();
@@ -91,7 +84,7 @@ pub fn ret_info (file_buf: &Vec<u8>) {
     }
     println!("RAM Size:       {}", ram_size);
 
-    
+
     if file_buf[0x014A] == 0 {
     	destination = "Japanese".to_string();
     } else {

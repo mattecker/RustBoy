@@ -1,3 +1,4 @@
+use gb;
 use gb::cpu::Cpu;
 use gb::memory::Memory;
 #[allow(dead_code)]
@@ -6,6 +7,7 @@ use gb::memory::Memory;
 #[allow(unused_variables)]
 
 pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: u8) {
+	println!("cpu.reg_pc: 0x{:04X}", cpu.reg_pc);
     println!("Executing instruction 0xCB{:02X}", ins);
 
     match ins {
@@ -60,10 +62,18 @@ pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: 
         }
         0x10    => { //
 
-        }
-        0x11    => { //
+        }*/
+        0x11    => { // RL C 1 8 Z00C
+			if gb::cpu::get_bit_at_8(cpu.reg_c, 7 as u8) {
+				cpu.reg_c	-= 0b10000000u8;
+				cpu.set_c();
+			}
 
-        }
+			cpu.reg_c	*= 2;
+			cpu.reset_n();
+			cpu.reset_h();
+			cpu.reg_pc	+= 1;
+        }/*
         0x12    => { //
 
         }
@@ -202,30 +212,40 @@ pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: 
         0x3F    => { //
 
         }
-        0x40    => { //
+		*/
+		//	this stuff probably doesn't pass the register correctly
+        0x40    => { //BIT b,B 2 8
+			let reg: u8	= cpu.reg_b;
+			bit_br(cpu, file_buf, reg);
+		}
+        0x41    => { //BIT b,C 2 8
+			let reg: u8	= cpu.reg_c;
+			bit_br(cpu, file_buf, reg);
+		}
+        0x42    => { //BIT b,D 2 8
+			let reg: u8	= cpu.reg_d;
+			bit_br(cpu, file_buf, reg);
+		}
+        0x43    => { //BIT b,E 2 8
+			let reg: u8	= cpu.reg_e;
+			bit_br(cpu, file_buf, reg);
+		}
+        0x44    => { //BIT b,H 2 8
+			let reg: u8	= cpu.reg_h;
+			bit_br(cpu, file_buf, reg);
+		}
+        0x45    => { //BIT b,L 2 8
+			let reg: u8	= cpu.reg_l;
+			bit_br(cpu, file_buf, reg);
+		}/*
+        0x46    => { //BIT b,(HL) 2 16
 
-        }
-        0x41    => { //
-
-        }
-        0x42    => { //
-
-        }
-        0x43    => { //
-
-        }
-        0x44    => { //
-
-        }
-        0x45    => { //
-
-        }
-        0x46    => { //
-
-        }
-        0x47    => { //
-
-        }
+		}*/
+        0x47    => { //BIT b,A 2 8
+			let reg: u8	= cpu.reg_a;
+			bit_br(cpu, file_buf, reg);
+		}
+		/*
         0x48    => { //
 
         }
@@ -523,7 +543,7 @@ pub fn exec_ins_cb(cpu: &mut Cpu, memory: &mut Memory, file_buf: &Vec<u8>, ins: 
         //0xFE    => /*
         0xFF    => /*SET 7,A 2 8*/ set_bit_nr(&mut cpu.reg_a, 7, &mut cpu.reg_pc),
         _       => {
-            println!("Unrecognized/unimplemented instruction: 0xCB{:x}", ins);
+            println!("Unrecognized/unimplemented instruction: 0xCB{:X}", ins);
             cpu.cont    = false;
         }
     }
@@ -555,4 +575,14 @@ fn get_bit_at_8(input: u8, n: u8) -> bool {
     } else {
         false
     }
+}
+
+fn bit_br(cpu: &mut Cpu, file_buf: &Vec<u8>, reg: u8) {
+	if !get_bit_at_8(file_buf[(cpu.reg_pc+1) as usize], reg) {
+		cpu.set_z();
+	}
+	cpu.reset_n();
+	cpu.set_h();
+
+	cpu.reg_pc	+= 2;
 }
