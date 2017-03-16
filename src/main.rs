@@ -16,7 +16,7 @@ fn main() {
     let mut cpu     = gb::cpu::Cpu::new();
     let mut memory  = gb::memory::Memory::new();
     memory.initialize();
-	let mut display = sdl2.new_display(1);
+	
     let mut ins     = file_buf[cpu.reg_pc as usize]; // keeps track of current instruction
 
 	let mut ins_count	= 0;
