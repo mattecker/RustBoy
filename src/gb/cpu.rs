@@ -1,4 +1,5 @@
-use gb::memory::Memory;
+//use gb::memory::Memory;
+use std::sync::mpsc::channel;
 #[derive(Default)]
 
 pub struct Cpu { // some variables public for debugging at the moment
@@ -16,7 +17,8 @@ pub struct Cpu { // some variables public for debugging at the moment
 
     pub cont:   bool,
 	pub allow_interrupts:	bool,
-	pub interrupt_count:	i8
+	pub interrupt_count:	i8,
+	pub cycle_count:	usize
 }
 
 impl Cpu {
@@ -37,6 +39,7 @@ impl Cpu {
             cont:   true,
 			allow_interrupts:	false,
 			interrupt_count:	0,
+			cycle_count:		0
         }
     }
 
@@ -163,7 +166,9 @@ impl Cpu {
 		}
 	}
 
-
+	// pub fn sleep(&mut self) {
+	//
+	// }
 }
 
 // modified from https://www.reddit.com/r/rust/comments/3xgeo0/biginner_question_how_can_i_get_the_value_of_a/cy4ei5n/

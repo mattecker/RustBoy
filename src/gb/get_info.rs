@@ -2,12 +2,12 @@ use std::env;
 
 pub fn ret_info (file_buf: &Vec<u8>) {
 	let mut	rom_name		= String::new();
-    let mut	gameboy_color	= String::new();
-    let mut	super_gameboy	= String::new();
-    let mut	cartridge_type	= String::new();
-    let mut	rom_size		= String::new();
-    let mut	ram_size		= String::new();
-    let mut	destination		= String::new();
+    let mut	gameboy_color: String;
+    let mut	super_gameboy: String;
+    let mut	cartridge_type: String;
+    let mut	rom_size: String;
+    let mut	ram_size: String;
+    let mut	destination: String;
 
     for x in 0x0134..0x0143 {
     	rom_name.push(file_buf[x] as char);

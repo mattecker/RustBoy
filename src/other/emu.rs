@@ -1,34 +1,42 @@
 use gb;
 use gb::cpu::Cpu;
 use gb::memory::Memory;
+use other::sprite::Sprite;
+use other::timer::Timer;
+use std::time::SystemTime;
 
 pub struct Emu {
-	cpu:	gb::cpu::Cpu,
-	memory:	gb::memory::Memory,
+	cpu:		Cpu,
+	memory:		Memory,
 	file_buf:	Vec<u8>,
-	ins:	u8,
-	ins_count:	usize
+	ins:		u8,
+	ins_count:	usize,
+	timer:		Timer
 }
 
 impl Emu {
 	pub fn new(file_buf: Vec<u8>) -> Emu {
 		Emu {
-			cpu:		gb::cpu::Cpu::new(),
-		    memory:		gb::memory::Memory::new(),
+			cpu:		Cpu::new(),
+		    memory:		Memory::new(),
 			file_buf:	file_buf,
 			ins:		0,
-			ins_count:	0
+			ins_count:	0,
+			timer:		Timer::new(1 as f32)
 		}
 	}
 
 	pub fn init(&mut self) {
 		self.memory.initialize();
 		self.ins	= self.file_buf[self.cpu.reg_pc as usize]; // keeps track of current instruction
+		self.timer.start();
 	}
 
-	pub fn exec(&mut self) {
-		while self.cpu.cont {
-			self.cpu.print();
+	pub fn exec(&mut self) -> Sprite {
+		let mut spr	= Sprite::new();
+
+		if self.cpu.cont {
+			// self.cpu.print();
 
 	        if self.ins == 0xCB {
 	            self.ins = self.file_buf[(self.cpu.reg_pc + 1) as usize];
@@ -37,16 +45,32 @@ impl Emu {
 	            gb::instructions::exec_ins(&mut self.cpu, &mut self.memory, &self.file_buf, self.ins);
 	        }
 
-			self.ins_count	+= 1;
-			if self.ins_count == 50 {
-				self.cpu.cont	= false;
-			}
+			// self.ins_count	+= 1;
+			// if self.ins_count == 300 {
+			// 	self.cpu.cont	= false;
+			// }
 
 	        self.ins = self.file_buf[self.cpu.reg_pc as usize];
 
 			if self.cpu.interrupt_count != 0 {
 				self.cpu.interrupt_handler();
 			}
+
+			spr.init(&self.file_buf, 0x8016 as u16);
 	    }
+
+		// sleep logic, broken for now
+		// if self.cpu.cycle_count >= 1_048 { // rounded down, since the number of instructions will be at or above depending on the last instruction
+		// 	self.cpu.cycle_count	= 0;	// reset cycle counter
+		// 	if let Err(e) = self.timer.rx.recv() { // wait for next timer cycle
+	    //          panic!("Error: Timer not responding {:?}", e);
+	    //     }
+		// 	let now = SystemTime::now();
+		// 	println!("{:?}", now);
+		// }
+
+
+
+		spr
 	}
 }
