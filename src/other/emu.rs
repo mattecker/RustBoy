@@ -60,7 +60,8 @@ impl Emu {
 	    }
 
 		// sleep logic, broken for now
-		if self.cpu.cycle_count >= 1_048 { // rounded down, since the number of instructions will be at or above depending on the last instruction
+		//if self.cpu.cycle_count >= 1_048 { // rounded down, since the number of instructions will be at or above depending on the last instruction
+		if self.cpu.cycle_count >= 17_555 {
 			self.cpu.cycle_count	= 0;	// reset cycle counter
 			// if let Err(e) = self.timer.rx.recv() { // wait for next timer cycle
 	        //      panic!("Error: Timer not responding {:?}", e);

@@ -22,7 +22,7 @@ impl Timer {
 
 		let handle	= thread::Builder::new().name("timer".to_string()).spawn(move || {
 			loop {
-	            thread::sleep(time::Duration::from_millis(1));
+	            thread::sleep(time::Duration::from_millis(16));
 	            if let Err(_) = tx.send(1) {
 	                // End thread
 					println!("Timer died");
