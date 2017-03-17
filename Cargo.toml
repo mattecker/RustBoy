@@ -4,3 +4,7 @@ version = "0.1.0"
 authors = ["mattecker <eckermd@gmail.com>"]
 
 [dependencies]
+sdl2 = "0.29.0"
+
+[dependencies.gl]
+git = "https://github.com/bjz/gl-rs"

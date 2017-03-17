@@ -1,20 +1,13 @@
-#[allow(unused_imports)]
 use std::env;
 
-
-
-
-#[allow(unused_assignments)]
-#[allow(unused_mut)]
-#[allow(unused_variables)]
 pub fn ret_info (file_buf: &Vec<u8>) {
 	let mut	rom_name		= String::new();
-    let mut	gameboy_color	= String::new();
-    let mut	super_gameboy	= String::new();
-    let mut	cartridge_type	= String::new();
-    let mut	rom_size		= String::new();
-    let mut	ram_size		= String::new();
-    let mut	destination		= String::new();
+    let mut	gameboy_color: String;
+    let mut	super_gameboy: String;
+    let mut	cartridge_type: String;
+    let mut	rom_size: String;
+    let mut	ram_size: String;
+    let mut	destination: String;
 
     for x in 0x0134..0x0143 {
     	rom_name.push(file_buf[x] as char);
@@ -91,7 +84,7 @@ pub fn ret_info (file_buf: &Vec<u8>) {
     }
     println!("RAM Size:       {}", ram_size);
 
-    
+
     if file_buf[0x014A] == 0 {
     	destination = "Japanese".to_string();
     } else {
